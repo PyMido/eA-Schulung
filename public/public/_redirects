@@ -1,5 +1,5 @@
-# 1) Identity Endpoints müssen erreichbar bleiben
-/.netlify/identity/*   /.netlify/identity/:splat   200
+# Identity endpoints müssen erreichbar bleiben
+/.netlify/identity/*  /.netlify/identity/:splat  200
 
-# 2) Alles andere nur für eingeloggte Nutzer
-/*   /index.html   200!  Role=authenticated
+# Alles andere nur für eingeloggte Nutzer
+/*  /index.html  200!  Role=authenticated
