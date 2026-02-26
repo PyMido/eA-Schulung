@@ -1,105 +1,405 @@
 <!DOCTYPE html>
+<!--
+  Start page for mandatory pharmacy training. Uses Netlify Identity for login,
+  stores learning progress in localStorage, provides interactive quizzes, and
+  generates a PDF certificate via jsPDF. This version improves the UI with
+  a progress bar and refined layout. It summarises hygiene, data protection
+  and quality management requirements based on publicly available sources.
+-->
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eA Schulung</title>
-
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pflichtschulung Apotheke</title>
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css">
+  <!-- Netlify Identity -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
+  <!-- jsPDF for certificate generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 40px; }
-    button { padding: 10px 15px; font-size: 14px; cursor: pointer; margin-right: 10px; }
-    .hint { color:#444; margin-top:10px; }
+    body { background-color: #f7fafc; }
+    details { border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; background-color: #fff; }
+    summary { font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .hidden { display: none; }
+    .footnote-ref { font-size: 0.75rem; vertical-align: super; }
+    footer { font-size: 0.75rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
   </style>
 </head>
-<body>
-
-  <h1>eA Schulung</h1>
-
-  <div id="logged-out">
-    <p>Bitte anmelden, um die Schulungen zu öffnen.</p>
-    <button id="loginBtn">Login</button>
-    <button id="activateBtn">Einladung / Zugang aktivieren</button>
-    <div class="hint">
-      Hinweis: Wenn du über eine Einladung kommst, nutze „Einladung / Zugang aktivieren“.
+<body class="font-sans leading-relaxed antialiased">
+  <header class="bg-blue-700 text-white p-4 flex flex-col md:flex-row md:justify-between md:items-center">
+    <h1 class="text-2xl font-bold mb-2 md:mb-0">Pflichtschulung Apotheke</h1>
+    <!-- Fortschrittsanzeige -->
+    <div id="progressWrapper" class="hidden items-center space-x-2">
+      <span id="progressText" class="text-sm"></span>
+      <div class="w-40 h-2 bg-blue-100 rounded">
+        <div id="progressBar" class="h-2 bg-blue-500 rounded" style="width:0%"></div>
+      </div>
     </div>
-  </div>
-
-  <div id="logged-in" style="display:none;">
-    <p><strong>Angemeldet.</strong></p>
-    <button id="logoutBtn">Logout</button>
-
-    <hr>
-
-    <h2>Module</h2>
-    <ul>
-      <li><a href="/module/qm.html">QM Schulung</a></li>
-    </ul>
-  </div>
-
+  </header>
+  <main class="max-w-4xl mx-auto px-4 py-4">
+    <!-- Logged-out view -->
+    <div id="logged-out">
+      <p class="mb-4">Bitte melde dich an, um die Schulungsmodule zu starten.</p>
+      <button id="loginBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Anmelden</button>
+      <button id="activateBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded ml-2">Einladung&nbsp;/&nbsp;Zugang aktivieren</button>
+      <p class="text-sm text-gray-600 mt-2">Wenn du eine Einladung erhalten hast, nutze bitte „Einladung&nbsp;/&nbsp;Zugang aktivieren“.</p>
+    </div>
+    <!-- Logged-in view -->
+    <div id="logged-in" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <p class="font-semibold">Du bist angemeldet.</p>
+        <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Abmelden</button>
+      </div>
+      <div id="courses" class="space-y-4"></div>
+      <!-- Certificate section -->
+      <div id="certificateSection" class="hidden mt-6 p-4 border-t border-gray-200">
+        <h2 class="text-xl font-bold mb-2">Zertifikat</h2>
+        <p class="mb-4">Alle Module wurden erfolgreich abgeschlossen. Du kannst jetzt dein Zertifikat herunterladen.</p>
+        <label class="block mb-2" for="userNameInput">Name für das Zertifikat:</label>
+        <input id="userNameInput" type="text" class="border border-gray-300 rounded px-2 py-1 w-full mb-4" placeholder="Dein Name">
+        <button id="downloadCertificateBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Zertifikat herunterladen</button>
+      </div>
+    </div>
+    <!-- Footnotes / Sources -->
+    <footer id="footnotes">
+      <h2 class="font-semibold mb-2">Quellen</h2>
+      <ol class="list-decimal list-inside space-y-1">
+        <li id="fn1"><a href="#cite1">Hygieneregeln im Rezepturbereich – Arbeitsplatz &amp; Vorbereitung【51600894259072†L98-L105】</a></li>
+        <li id="fn2"><a href="#cite2">Hygieneregeln – Personalhygiene【51600894259072†L110-L126】</a></li>
+        <li id="fn3"><a href="#cite3">Hygieneregeln – Kleidung【51600894259072†L127-L147】</a></li>
+        <li id="fn4"><a href="#cite4">Hygieneregeln – Haare, Handschuhe &amp; Atemschutz【51600894259072†L149-L176】【51600894259072†L179-L189】</a></li>
+        <li id="fn5"><a href="#cite5">ApBetrO §4a Hygienemaßnahmen【182821784901694†L746-L772】</a></li>
+        <li id="fn6"><a href="#cite6">DSGVO Einführung【483844578182890†L730-L736】</a></li>
+        <li id="fn7"><a href="#cite7">Verarbeitung sensibler Daten &amp; Datenschutzbeauftragter【483844578182890†L748-L755】【483844578182890†L807-L817】</a></li>
+        <li id="fn8"><a href="#cite8">Verantwortung &amp; Bußgelder【483844578182890†L756-L760】</a></li>
+        <li id="fn9"><a href="#cite9">Informationspflicht &amp; Einwilligung【483844578182890†L770-L788】</a></li>
+        <li id="fn10"><a href="#cite10">Aktive Einwilligung【483844578182890†L792-L801】</a></li>
+        <li id="fn11"><a href="#cite11">Technische &amp; organisatorische Maßnahmen【483844578182890†L824-L836】</a></li>
+        <li id="fn12"><a href="#cite12">Verarbeitungsverzeichnis &amp; Meldung von Datenpannen【483844578182890†L840-L851】</a></li>
+        <li id="fn13"><a href="#cite13">Qualitätsmanagementsystem – Anforderungen【182821784901694†L420-L430】</a></li>
+        <li id="fn14"><a href="#cite14">Selbstinspektionen &amp; externe Qualitätsüberprüfungen【182821784901694†L432-L437】</a></li>
+        <li id="fn15"><a href="#cite15">Unterweisung des Personals im QMS【182821784901694†L444-L450】</a></li>
+      </ol>
+    </footer>
+  </main>
   <script>
-    const loggedOut = document.getElementById("logged-out");
-    const loggedIn  = document.getElementById("logged-in");
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const activateBtn = document.getElementById('activateBtn');
+      const loggedOut = document.getElementById('logged-out');
+      const loggedIn = document.getElementById('logged-in');
+      const coursesContainer = document.getElementById('courses');
+      const certificateSection = document.getElementById('certificateSection');
+      const downloadCertificateBtn = document.getElementById('downloadCertificateBtn');
+      const userNameInput = document.getElementById('userNameInput');
+      const progressWrapper = document.getElementById('progressWrapper');
+      const progressText = document.getElementById('progressText');
+      const progressBar = document.getElementById('progressBar');
 
-    function updateUI(user) {
-      loggedOut.style.display = user ? "none" : "block";
-      loggedIn.style.display  = user ? "block" : "none";
-    }
+      // Course definitions: three modules with content and quizzes
+      const courses = [
+        {
+          id: 'hygiene',
+          title: 'Modul&nbsp;1: Hygienemanagement',
+          intro: 'Eine saubere Apotheke ist die Grundlage für sichere Arzneimittel. Dieses Modul behandelt die zentrale Bedeutung der Hygiene und zeigt, wie du durch richtige Verhaltensweisen und Schutzkleidung eine mikrobiologische Kontamination vermeidest.',
+          content: `
+            <h3 class="text-lg font-semibold mt-4">Arbeitsplatz vorbereiten</h3>
+            <p>Vor Beginn der Herstellung muss der Arbeitsplatz gereinigt und desinfiziert werden. Alle benötigten Substanzen, Geräte und Verpackungsmaterialien werden auf der gereinigten Arbeitsfläche bereitgestellt; es wird stets in eine Richtung gearbeitet, um Kreuzkontaminationen zu vermeiden【51600894259072†L98-L105】<sup id="cite1" class="footnote-ref"><a href="#fn1">[1]</a></sup>.</p>
+            <h3 class="text-lg font-semibold mt-4">Personalhygiene</h3>
+            <p>Der größte Risikofaktor für Verunreinigungen ist das Personal. Es gilt: Kein Essen oder Trinken in Rezeptur und Labor; produktberührende Bereiche nicht berühren; nicht in Richtung offener Produkte husten oder niesen; Absprachen vor der Herstellung treffen, um währenddessen das Sprechen zu minimieren; erkältetes Personal sollte nicht eingesetzt werden【51600894259072†L110-L126】<sup id="cite2" class="footnote-ref"><a href="#fn2">[2]</a></sup>.</p>
+            <h3 class="text-lg font-semibold mt-4">Schutzkleidung</h3>
+            <p>Apothekenmitarbeiter erhalten persönliche Hygienekleidung. Der Kittel besteht aus Baumwolle, hat lange Ärmel und ist im Herstellungsbereich geschlossen zu tragen. Er bedeckt vollständig die darunter liegende Kleidung; auch Kapuzen oder Halstücher dürfen nicht herausragen. Schuhe müssen sauber sein; der Kittel wird mindestens einmal wöchentlich bei 60 °C gewaschen【51600894259072†L127-L147】<sup id="cite3" class="footnote-ref"><a href="#fn3">[3]</a></sup>.</p>
+            <h3 class="text-lg font-semibold mt-4">Haare, Handschuhe &amp; Atemschutz</h3>
+            <p>Lange Haare werden zusammengebunden und mit einer Haube bedeckt; gegebenenfalls ist ein Bartschutz nötig. Handschuhe werden erst nach dem gründlichen Waschen und Desinfizieren der Hände angezogen und bei Bedarf gewechselt; Schmuck wird vorher abgelegt. Bei Arbeiten am offenen Produkt ist ein Mund‑Nasenschutz (OP‑Maske) zu tragen und regelmäßig zu wechseln【51600894259072†L149-L176】【51600894259072†L179-L189】<sup id="cite4" class="footnote-ref"><a href="#fn4">[4]</a></sup>.</p>
+            <h3 class="text-lg font-semibold mt-4">Hygieneplan</h3>
+            <p>Nach § 4a Apothekenbetriebsordnung (ApBetrO) muss der Apothekenleiter geeignete Hygienemaßnahmen für Personal und Betriebsräume festlegen, um die mikrobiologische Qualität der hergestellten Arzneimittel zu sichern. Die Häufigkeit und Art der Reinigung und Desinfektion sowie die zu verwendenden Mittel und Geräte werden im Hygieneplan beschrieben; die Durchführung ist zu dokumentieren. Darüber hinaus sind Regeln zum hygienischen Verhalten am Arbeitsplatz und zur Schutzkleidung festzulegen【182821784901694†L746-L772】<sup id="cite5" class="footnote-ref"><a href="#fn5">[5]</a></sup>.</p>
+          `,
+          quiz: [
+            {
+              question: 'Warum sind Essen und Trinken im Rezeptur- und Laborbereich verboten?',
+              options: [
+                'Um eine Kontamination der herzustellenden Arzneimittel zu vermeiden.',
+                'Damit das Personal nicht abgelenkt wird.',
+                'Es ist nicht verboten.',
+                'Weil es bequemer ist, außerhalb zu essen.',
+              ],
+              correctIndex: 0
+            },
+            {
+              question: 'Wann sollten Einmalhandschuhe in der Rezeptur angezogen werden?',
+              options: [
+                'Sofort beim Betreten des Labors.',
+                'Erst nach dem gründlichen Waschen und Desinfizieren der Hände.',
+                'Nachdem das Produkt verpackt ist.',
+                'Nur wenn man erkältet ist.',
+              ],
+              correctIndex: 1
+            },
+            {
+              question: 'Was muss nach § 4a ApBetrO im Hygieneplan festgelegt werden?',
+              options: [
+                'Häufigkeit und Art der Reinigung und Desinfektion sowie eingesetzte Mittel und Geräte.',
+                'Geburtstage des Personals.',
+                'Umsatzzahlen der Apotheke.',
+                'Marketingstrategien der Apotheke.',
+              ],
+              correctIndex: 0
+            },
+          ],
+        },
+        {
+          id: 'datenschutz',
+          title: 'Modul&nbsp;2: Datenschutz &amp; Datensicherheit',
+          intro: 'Der Schutz personenbezogener Daten ist im Apothekenalltag unverzichtbar. Dieses Modul vermittelt dir die wichtigsten Grundsätze der Datenschutz‑Grundverordnung (DSGVO) und zeigt, wie du sensible Informationen korrekt verarbeitest.',
+          content: `
+            <p>Die Datenschutz‑Grundverordnung (DSGVO) gilt seit dem 25.&nbsp;Mai&nbsp;2018 und ersetzt in weiten Teilen das Bundesdatenschutzgesetz【483844578182890†L730-L736】<sup id="cite6" class="footnote-ref"><a href="#fn6">[6]</a></sup>. Sie schafft einen EU‑weit einheitlichen Rechtsrahmen für die Verarbeitung personenbezogener Daten.</p>
+            <p>Apotheken verarbeiten besonders sensible Informationen – etwa Name, Alter, Adresse, Medikation und Behandlungsdauer von Patienten – und müssen deshalb besonderen Wert auf Datenschutz und IT‑Sicherheit legen. Häufig ist ein Datenschutzbeauftragter zu benennen, wenn mindestens zwanzig Personen ständig automatisiert personenbezogene Daten verarbeiten【483844578182890†L748-L755】【483844578182890†L807-L817】<sup id="cite7" class="footnote-ref"><a href="#fn7">[7]</a></sup>. Der Apothekenleiter ist für die Einhaltung der DSGVO verantwortlich; Verstöße können mit Bußgeldern bis zu 4 % des Jahresumsatzes und berufsrechtlichen Konsequenzen geahndet werden【483844578182890†L756-L760】<sup id="cite8" class="footnote-ref"><a href="#fn8">[8]</a></sup>.</p>
+            <h3 class="text-lg font-semibold mt-4">Informationspflicht &amp; Einwilligung</h3>
+            <p>Bevor personenbezogene Daten erhoben werden, müssen Patienten informiert werden und ihre Einwilligung einholen. Betroffene haben jederzeit das Recht zu erfahren, welche Daten gespeichert werden, zu welchem Zweck und wie lange. Diese Informationen können mündlich, über Infozettel oder mittels Hinweistafel erfolgen; wichtig ist, dass sie klar von anderen Inhalten abgegrenzt und leicht verständlich sind【483844578182890†L770-L788】<sup id="cite9" class="footnote-ref"><a href="#fn9">[9]</a></sup>.</p>
+            <p>Die Einwilligung muss aktiv erfolgen – es sind keine vorausgewählten Checkboxen zulässig. Sie kann schriftlich oder digital eingeholt werden; dabei muss die betroffene Person eindeutig identifiziert werden. Die Erklärung muss präzise formulieren, welche Stelle welche konkreten Daten für welchen Zweck verwendet【483844578182890†L792-L801】<sup id="cite10" class="footnote-ref"><a href="#fn10">[10]</a></sup>.</p>
+            <h3 class="text-lg font-semibold mt-4">Technische &amp; organisatorische Maßnahmen</h3>
+            <p>Um DSGVO‑konform zu arbeiten, sind Zugriffe auf Räume zu beschränken, Rollen- und Rechtevergabe in der EDV zu regeln, Diskretionszonen einzurichten und das Personal regelmäßig zu schulen. Verfahren zur Löschung und die detaillierte Dokumentation aller Prozesse müssen festgelegt werden. Ein Verzeichnis der Verarbeitungstätigkeiten ist zu führen, und bei Datenpannen ist innerhalb von 72 Stunden die Aufsichtsbehörde zu informieren【483844578182890†L824-L836】【483844578182890†L840-L851】<sup id="cite11" class="footnote-ref"><a href="#fn11">[11]</a></sup><sup id="cite12" class="footnote-ref"><a href="#fn12">[12]</a></sup>.</p>
+          `,
+          quiz: [
+            {
+              question: 'Seit wann gilt die Datenschutz‑Grundverordnung (DSGVO)?',
+              options: [
+                '25.&nbsp;Mai&nbsp;2018',
+                '1.&nbsp;Januar&nbsp;2017',
+                '31.&nbsp;Dezember&nbsp;2019',
+                '1.&nbsp;Mai&nbsp;2020',
+              ],
+              correctIndex: 0
+            },
+            {
+              question: 'Ab welcher Mitarbeiterzahl muss ein Datenschutzbeauftragter bestellt werden, wenn automatisiert personenbezogene Daten verarbeitet werden?',
+              options: [
+                '5 Personen',
+                '10 Personen',
+                '20 Personen',
+                '50 Personen',
+              ],
+              correctIndex: 2
+            },
+            {
+              question: 'Welche Aussage beschreibt eine korrekte Einwilligung zur Datenverarbeitung?',
+              options: [
+                'Die Einwilligung erfolgt aktiv und der Betroffene wird klar über Daten, Zweck und Dauer informiert.',
+                'Eine vorab angekreuzte Checkbox genügt.',
+                'Es ist keine Einwilligung nötig, wenn die Daten gelöscht werden.',
+                'Der Betroffene muss nicht wissen, wozu seine Daten erhoben werden.',
+              ],
+              correctIndex: 0
+            },
+          ],
+        },
+        {
+          id: 'qm',
+          title: 'Modul&nbsp;3: Qualitätssicherung &amp; rechtliche Grundlagen',
+          intro: 'Qualität und Sicherheit haben in der Apotheke höchste Priorität. Dieses Modul fasst die gesetzlichen Anforderungen der Apothekenbetriebsordnung (ApBetrO) zusammen und erklärt, wie ein Qualitätsmanagementsystem umgesetzt wird.',
+          content: `
+            <p>Nach § 2a ApBetrO muss der Apothekenleiter ein Qualitätsmanagementsystem (QMS) betreiben. Dieses System legt betriebliche Abläufe fest und dokumentiert sie; es stellt sicher, dass Arzneimittel nach dem aktuellen Stand von Wissenschaft und Technik hergestellt, geprüft und gelagert werden, dass Verwechslungen vermieden werden und dass eine angemessene Beratung erfolgt【182821784901694†L420-L430】<sup id="cite13" class="footnote-ref"><a href="#fn13">[13]</a></sup>.</p>
+            <p>Regelmäßige Selbstinspektionen durch pharmazeutisches Personal überprüfen die betrieblichen Abläufe; bei Abweichungen müssen Korrekturen vorgenommen werden. Darüber hinaus sollte die Apotheke an externen Qualitätsüberprüfungen teilnehmen und alle Maßnahmen dokumentieren【182821784901694†L432-L437】<sup id="cite14" class="footnote-ref"><a href="#fn14">[14]</a></sup>.</p>
+            <p>Das Apothekenpersonal darf nur entsprechend seiner Ausbildung eingesetzt werden und muss regelmäßig unterwiesen werden. Die Unterweisung erstreckt sich sowohl auf die Theorie und Anwendung des Qualitätsmanagementsystems als auch auf Besonderheiten der Arzneimittel, die hergestellt, geprüft oder gelagert werden【182821784901694†L444-L450】<sup id="cite15" class="footnote-ref"><a href="#fn15">[15]</a></sup>.</p>
+            <p>In Verbindung mit dem Hygieneplan aus Modul 1 und den Datenschutzanforderungen aus Modul 2 bildet das QMS die Grundlage für einen sicheren Apothekenbetrieb. Dokumentiere deine Abläufe, führe regelmäßige Schulungen durch und stelle sicher, dass Fehler analysiert und künftig vermieden werden.</p>
+          `,
+          quiz: [
+            {
+              question: 'Was ist der Zweck eines Qualitätsmanagementsystems in der Apotheke?',
+              options: [
+                'Arzneimittel nach aktuellem Stand von Wissenschaft und Technik herzustellen, zu prüfen, zu lagern, Verwechslungen zu vermeiden und eine angemessene Beratung sicherzustellen.',
+                'Die Zahl der Kunden zu erhöhen.',
+                'Marketingkampagnen zu planen.',
+                'Nur die Lagerräume zu reinigen.',
+              ],
+              correctIndex: 0
+            },
+            {
+              question: 'Wer ist für regelmäßige Selbstinspektionen und externe Qualitätsüberprüfungen verantwortlich?',
+              options: [
+                'Der Apothekenleiter.',
+                'Die Reinigungskraft.',
+                'Die Kunden.',
+                'Niemand, diese sind freiwillig.',
+              ],
+              correctIndex: 0
+            },
+            {
+              question: 'Welche Inhalte umfasst die regelmäßige Unterweisung des Apothekenpersonals?',
+              options: [
+                'Theorie und Anwendung des Qualitätsmanagementsystems sowie Besonderheiten der hergestellten, geprüften oder gelagerten Arzneimittel.',
+                'Nur die Bedienung der Kasse.',
+                'Strategien zur Kundengewinnung.',
+                'Keine Schulung ist erforderlich.',
+              ],
+              correctIndex: 0
+            },
+          ],
+        },
+      ];
 
-    function hasNetlifyTokenInHash() {
-      const h = window.location.hash || "";
-      return (
-        h.includes("invite_token=") ||
-        h.includes("confirmation_token=") ||
-        h.includes("recovery_token=")
-      );
-    }
-
-    if (!window.netlifyIdentity) {
-      console.error("Netlify Identity nicht geladen");
-    } else {
-
-      // Buttons
-      document.getElementById("loginBtn").addEventListener("click", () => {
-        netlifyIdentity.open("login");
-      });
-
-      // Wichtig für Invite-only: Signup/Aktivierung
-      document.getElementById("activateBtn").addEventListener("click", () => {
-        netlifyIdentity.open("signup");
-      });
-
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        netlifyIdentity.logout();
-      });
-
-      // Events
-      netlifyIdentity.on("init", user => {
-        updateUI(user);
-
-        // Wenn du über einen Einladungslink kommst (#invite_token=...),
-        // öffne automatisch das richtige Fenster, damit Passwort gesetzt werden kann.
-        if (!user && hasNetlifyTokenInHash()) {
-          netlifyIdentity.open("signup");
+      // load progress from localStorage or initialize
+      let progress = JSON.parse(localStorage.getItem('apothekeProgress') || '{}');
+      courses.forEach(c => {
+        if (!progress[c.id]) {
+          progress[c.id] = { completed: false, score: 0 };
         }
       });
 
-      netlifyIdentity.on("login", user => {
-        updateUI(user);
-        netlifyIdentity.close();
-        window.location.hash = "";   // Token aus URL entfernen
-        window.location.reload();    // wichtig wegen Role=authenticated
+      function saveProgress() {
+        localStorage.setItem('apothekeProgress', JSON.stringify(progress));
+      }
+
+      function updateProgressDisplay() {
+        const total = courses.length;
+        const completed = courses.filter(c => progress[c.id].completed).length;
+        progressText.textContent = `${completed}/${total} Module abgeschlossen`;
+        const percentage = total ? (completed / total) * 100 : 0;
+        progressBar.style.width = percentage + '%';
+      }
+
+      function updateCertificateVisibility() {
+        const allCompleted = courses.every(c => progress[c.id].completed);
+        if (allCompleted) {
+          certificateSection.classList.remove('hidden');
+        } else {
+          certificateSection.classList.add('hidden');
+        }
+      }
+
+      function renderCourses() {
+        coursesContainer.innerHTML = '';
+        courses.forEach(course => {
+          const details = document.createElement('details');
+          details.className = 'course';
+          details.open = !progress[course.id].completed;
+          const summary = document.createElement('summary');
+          summary.innerHTML = `<span>${course.title}</span><span class="text-sm ${progress[course.id].completed ? 'text-green-600' : 'text-gray-500'}">${progress[course.id].completed ? 'Abgeschlossen' : 'Offen'}</span>`;
+          details.appendChild(summary);
+          const contentDiv = document.createElement('div');
+          contentDiv.className = 'mt-2 space-y-2';
+          contentDiv.innerHTML = `
+            <p>${course.intro}</p>
+            ${course.content}
+            <div class="quiz mt-4 p-4 bg-gray-50 border border-gray-200 rounded">
+              <h4 class="font-semibold mb-2">Quiz</h4>
+              ${course.quiz.map((q, qi) => `
+                <div class="quiz-question mb-3">
+                  <p>${qi + 1}. ${q.question}</p>
+                  ${q.options.map((opt, oi) => `
+                    <label class="block">
+                      <input type="radio" name="${course.id}-q${qi}" value="${oi}" class="mr-2"> ${opt}
+                    </label>
+                  `).join('')}
+                </div>
+              `).join('')}
+              <button class="submit-quiz mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" data-course="${course.id}">Quiz abschließen</button>
+              <p class="quiz-feedback text-sm mt-2"></p>
+            </div>
+          `;
+          details.appendChild(contentDiv);
+          coursesContainer.appendChild(details);
+        });
+        // attach event listeners for quiz buttons
+        document.querySelectorAll('.submit-quiz').forEach(btn => {
+          btn.addEventListener('click', e => {
+            const courseId = e.target.dataset.course;
+            const course = courses.find(c => c.id === courseId);
+            const feedbackEl = e.target.nextElementSibling;
+            let score = 0;
+            course.quiz.forEach((q, qi) => {
+              const selected = document.querySelector('input[name="' + courseId + '-q' + qi + '"]:checked');
+              if (selected && parseInt(selected.value) === q.correctIndex) {
+                score++;
+              }
+            });
+            const percentage = Math.round((score / course.quiz.length) * 100);
+            if (percentage >= 80) {
+              progress[courseId].completed = true;
+              progress[courseId].score = percentage;
+              feedbackEl.textContent = 'Herzlichen Glückwunsch! Du hast das Quiz mit ' + percentage + '% bestanden.';
+              feedbackEl.className = 'quiz-feedback text-green-600';
+              saveProgress();
+              renderCourses();
+              updateProgressDisplay();
+              updateCertificateVisibility();
+            } else {
+              feedbackEl.textContent = 'Leider nur ' + percentage + '%. Du benötigst mindestens 80%, um das Modul abzuschließen. Versuche es noch einmal!';
+              feedbackEl.className = 'quiz-feedback text-red-600';
+            }
+          });
+        });
+      }
+
+      function updateUI() {
+        const user = window.netlifyIdentity ? netlifyIdentity.currentUser() : null;
+        if (user) {
+          loggedOut.classList.add('hidden');
+          loggedIn.classList.remove('hidden');
+          progressWrapper.classList.remove('hidden');
+          renderCourses();
+          updateProgressDisplay();
+          updateCertificateVisibility();
+        } else {
+          loggedOut.classList.remove('hidden');
+          loggedIn.classList.add('hidden');
+          progressWrapper.classList.add('hidden');
+        }
+      }
+
+      // Netlify Identity events
+      if (window.netlifyIdentity) {
+        netlifyIdentity.on('init', user => {
+          updateUI();
+        });
+        netlifyIdentity.on('login', user => {
+          updateUI();
+          netlifyIdentity.close();
+        });
+        netlifyIdentity.on('logout', () => {
+          updateUI();
+        });
+      }
+
+      loginBtn.addEventListener('click', () => {
+        netlifyIdentity.open('login');
+      });
+      activateBtn.addEventListener('click', () => {
+        netlifyIdentity.open('signup');
+      });
+      logoutBtn.addEventListener('click', () => {
+        netlifyIdentity.logout();
       });
 
-      netlifyIdentity.on("logout", () => {
-        updateUI(null);
-        window.location.reload();
+      // Certificate generation
+      downloadCertificateBtn.addEventListener('click', () => {
+        const name = userNameInput.value.trim();
+        if (!name) {
+          alert('Bitte gib deinen Namen ein.');
+          return;
+        }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        doc.setFontSize(32);
+        doc.setTextColor(40, 40, 40);
+        doc.text('Zertifikat', 148, 40, { align: 'center' });
+        doc.setFontSize(18);
+        doc.text('Hiermit wird bestätigt, dass', 148, 65, { align: 'center' });
+        doc.setFontSize(22);
+        doc.text(name, 148, 85, { align: 'center' });
+        doc.setFontSize(16);
+        doc.text('die Pflichtschulung für Apotheken erfolgreich abgeschlossen hat.', 148, 105, { align: 'center' });
+        const dateStr = new Date().toLocaleDateString('de-DE');
+        doc.setFontSize(12);
+        doc.text('Ausgestellt am ' + dateStr, 148, 125, { align: 'center' });
+        doc.setFontSize(10);
+        doc.text('Apothekenbetriebsordnung-konforme Pflichtschulung', 148, 140, { align: 'center' });
+        doc.save('Zertifikat.pdf');
       });
 
-      netlifyIdentity.init();
-    }
+    });
   </script>
-
 </body>
 </html>
