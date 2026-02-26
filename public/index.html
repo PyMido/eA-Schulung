@@ -1,11 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>eA Schulung</title>
+
+  <!-- Netlify Identity Widget -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-  <h1>Willkommen zur Mitarbeiterschulung</h1>
-  <p>Bitte anmelden und Modul starten.</p>
+  <h1>eA Schulung</h1>
+
+  <div id="auth">
+    <p>Bitte anmelden, um die Schulungen zu öffnen.</p>
+    <button onclick="netlifyIdentity.open()">Login / Zugangscode</button>
+  </div>
+
+  <div id="app" style="display:none;">
+    <p><b>Eingeloggt.</b> Schulungen folgen gleich.</p>
+    <button onclick="netlifyIdentity.logout()">Logout</button>
+
+    <hr/>
+    <h2>Module</h2>
+    <ul>
+      <li><a href="/module/qm.html">QM (Demo-Seite)</a></li>
+    </ul>
+  </div>
+
+  <script>
+    netlifyIdentity.on("init", user => {
+      if (user) {
+        document.getElementById("auth").style.display = "none";
+        document.getElementById("app").style.display = "block";
+      } else {
+        document.getElementById("auth").style.display = "block";
+        document.getElementById("app").style.display = "none";
+      }
+    });
+
+    netlifyIdentity.init();
+  </script>
 </body>
 </html>
