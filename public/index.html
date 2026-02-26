@@ -5,25 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>eA Schulung</title>
 
-  <!-- Netlify Identity -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
   <style>
     body { font-family: Arial, sans-serif; padding: 40px; }
-    button { padding: 10px 15px; font-size: 14px; cursor: pointer; }
+    button { padding: 10px 15px; font-size: 14px; cursor: pointer; margin-right: 10px; }
+    .hint { color:#444; margin-top:10px; }
   </style>
 </head>
 <body>
 
   <h1>eA Schulung</h1>
 
-  <!-- Bereich wenn NICHT eingeloggt -->
   <div id="logged-out">
     <p>Bitte anmelden, um die Schulungen zu öffnen.</p>
-    <button id="loginBtn">Login / Zugangscode</button>
+    <button id="loginBtn">Login</button>
+    <button id="activateBtn">Einladung / Zugang aktivieren</button>
+    <div class="hint">
+      Hinweis: Wenn du über eine Einladung kommst, nutze „Einladung / Zugang aktivieren“.
+    </div>
   </div>
 
-  <!-- Bereich wenn eingeloggt -->
   <div id="logged-in" style="display:none;">
     <p><strong>Angemeldet.</strong></p>
     <button id="logoutBtn">Logout</button>
@@ -41,25 +43,53 @@
     const loggedIn  = document.getElementById("logged-in");
 
     function updateUI(user) {
-      if (user) {
-        loggedOut.style.display = "none";
-        loggedIn.style.display = "block";
-      } else {
-        loggedOut.style.display = "block";
-        loggedIn.style.display = "none";
-      }
+      loggedOut.style.display = user ? "none" : "block";
+      loggedIn.style.display  = user ? "block" : "none";
     }
 
-    if (window.netlifyIdentity) {
+    function hasNetlifyTokenInHash() {
+      const h = window.location.hash || "";
+      return (
+        h.includes("invite_token=") ||
+        h.includes("confirmation_token=") ||
+        h.includes("recovery_token=")
+      );
+    }
 
+    if (!window.netlifyIdentity) {
+      console.error("Netlify Identity nicht geladen");
+    } else {
+
+      // Buttons
+      document.getElementById("loginBtn").addEventListener("click", () => {
+        netlifyIdentity.open("login");
+      });
+
+      // Wichtig für Invite-only: Signup/Aktivierung
+      document.getElementById("activateBtn").addEventListener("click", () => {
+        netlifyIdentity.open("signup");
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        netlifyIdentity.logout();
+      });
+
+      // Events
       netlifyIdentity.on("init", user => {
         updateUI(user);
+
+        // Wenn du über einen Einladungslink kommst (#invite_token=...),
+        // öffne automatisch das richtige Fenster, damit Passwort gesetzt werden kann.
+        if (!user && hasNetlifyTokenInHash()) {
+          netlifyIdentity.open("signup");
+        }
       });
 
       netlifyIdentity.on("login", user => {
         updateUI(user);
         netlifyIdentity.close();
-        window.location.reload(); // wichtig wegen Role=authenticated
+        window.location.hash = "";   // Token aus URL entfernen
+        window.location.reload();    // wichtig wegen Role=authenticated
       });
 
       netlifyIdentity.on("logout", () => {
@@ -68,17 +98,6 @@
       });
 
       netlifyIdentity.init();
-
-      document.getElementById("loginBtn").addEventListener("click", () => {
-        netlifyIdentity.open();
-      });
-
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        netlifyIdentity.logout();
-      });
-
-    } else {
-      console.error("Netlify Identity nicht geladen");
     }
   </script>
 
