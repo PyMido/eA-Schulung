@@ -1,44 +1,86 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>eA Schulung</title>
 
-  <!-- Netlify Identity Widget -->
+  <!-- Netlify Identity -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; }
+    button { padding: 10px 15px; font-size: 14px; cursor: pointer; }
+  </style>
 </head>
 <body>
+
   <h1>eA Schulung</h1>
 
-  <div id="auth">
+  <!-- Bereich wenn NICHT eingeloggt -->
+  <div id="logged-out">
     <p>Bitte anmelden, um die Schulungen zu öffnen.</p>
-    <button onclick="netlifyIdentity.open()">Login / Zugangscode</button>
+    <button id="loginBtn">Login / Zugangscode</button>
   </div>
 
-  <div id="app" style="display:none;">
-    <p><b>Eingeloggt.</b> Schulungen folgen gleich.</p>
-    <button onclick="netlifyIdentity.logout()">Logout</button>
+  <!-- Bereich wenn eingeloggt -->
+  <div id="logged-in" style="display:none;">
+    <p><strong>Angemeldet.</strong></p>
+    <button id="logoutBtn">Logout</button>
 
-    <hr/>
+    <hr>
+
     <h2>Module</h2>
     <ul>
-      <li><a href="/module/qm.html">QM (Demo-Seite)</a></li>
+      <li><a href="/module/qm.html">QM Schulung</a></li>
     </ul>
   </div>
 
   <script>
-    netlifyIdentity.on("init", user => {
-      if (user) {
-        document.getElementById("auth").style.display = "none";
-        document.getElementById("app").style.display = "block";
-      } else {
-        document.getElementById("auth").style.display = "block";
-        document.getElementById("app").style.display = "none";
-      }
-    });
+    const loggedOut = document.getElementById("logged-out");
+    const loggedIn  = document.getElementById("logged-in");
 
-    netlifyIdentity.init();
+    function updateUI(user) {
+      if (user) {
+        loggedOut.style.display = "none";
+        loggedIn.style.display = "block";
+      } else {
+        loggedOut.style.display = "block";
+        loggedIn.style.display = "none";
+      }
+    }
+
+    if (window.netlifyIdentity) {
+
+      netlifyIdentity.on("init", user => {
+        updateUI(user);
+      });
+
+      netlifyIdentity.on("login", user => {
+        updateUI(user);
+        netlifyIdentity.close();
+        window.location.reload(); // wichtig wegen Role=authenticated
+      });
+
+      netlifyIdentity.on("logout", () => {
+        updateUI(null);
+        window.location.reload();
+      });
+
+      netlifyIdentity.init();
+
+      document.getElementById("loginBtn").addEventListener("click", () => {
+        netlifyIdentity.open();
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        netlifyIdentity.logout();
+      });
+
+    } else {
+      console.error("Netlify Identity nicht geladen");
+    }
   </script>
+
 </body>
 </html>
