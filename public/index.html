@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<!--
+  Pflichtschulung Apotheke – Netlify Identity + Quiz + Zertifikat (jsPDF)
+  Stand: 2026-02-27
+
+  Inhalte (Schulungstexte) wurden aus einer DOCX-Vorlage übernommen.
+  Fortschritt wird pro Benutzer (E-Mail) im localStorage gespeichert.
+
+  Hinweis: Für "auditfest" (zentraler Nachweis) können wir später Netlify Functions + Storage ergänzen.
+-->
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pflichtschulung Apotheke</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    body { background-color: #f7fafc; }
+    details { border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; background-color: #fff; }
+    summary { font-weight: 650; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: .75rem; }
+    summary::-webkit-details-marker { display:none; }
+    .hidden { display: none; }
+    .tag { font-size: 0.75rem; padding: .15rem .5rem; border-radius: 999px; border: 1px solid #e2e8f0; }
+    .tag-optional { background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+    .tag-mandatory { background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; }
+    .tag-done { background:#ecfdf5; border-color:#a7f3d0; color:#065f46; }
+    .tag-open { background:#f1f5f9; border-color:#e2e8f0; color:#334155; }
+    footer { font-size: 0.85rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; color:#334155; }
+    .quiz-feedback { font-weight: 600; }
+    .muted { color:#64748b; }
+    /* make long content readable */
+    .prose p { margin-top: .5rem; }
+  </style>
+</head>
+
+<body class="font-sans leading-relaxed antialiased">
+  <header class="bg-blue-700 text-white p-4 flex flex-col md:flex-row md:justify-between md:items-center">
+    <div class="flex flex-col">
+      <h1 class="text-2xl font-bold mb-1">Pflichtschulung Apotheke</h1>
+      <span class="text-sm text-blue-100">Interne Selbstschulung (Schulungstexte + Quiz + Zertifikat)</span>
+    </div>
+
+    <div id="progressWrapper" class="hidden items-center space-x-3 mt-3 md:mt-0">
+      <div class="text-right">
+        <div id="progressText" class="text-sm font-semibold"></div>
+        <div id="userText" class="text-xs text-blue-100"></div>
+      </div>
+      <div class="w-44 h-2 bg-blue-100 rounded">
+        <div id="progressBar" class="h-2 bg-blue-500 rounded" style="width:0%"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <div id="logged-out" class="bg-white border border-gray-200 rounded-xl p-5">
+      <p class="mb-4">Bitte melde dich an, um die Schulungsmodule zu starten.</p>
+      <div class="flex flex-wrap gap-2">
+        <button id="loginBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Anmelden</button>
+        <button id="activateBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Einladung / Zugang aktivieren</button>
+      </div>
+      <p class="text-sm text-gray-600 mt-3">
+        Wenn du eine Einladung erhalten hast, nutze „Einladung / Zugang aktivieren“.
+      </p>
+      <div class="mt-4 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded p-3">
+        <b>Hinweis:</b> Diese Schulung ersetzt keine Rechtsberatung. Maßgeblich sind die aktuellen internen SOPs/Anweisungen deiner Apotheke.
+      </div>
+    </div>
+
+    <div id="logged-in" class="hidden">
+      <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4 bg-white border border-gray-200 rounded-xl p-4">
+        <div>
+          <p class="font-semibold">Du bist angemeldet.</p>
+          <p class="text-sm text-gray-600">Schließe jedes Quiz mit mindestens <b>80%</b> ab.</p>
+          <p class="text-xs text-gray-500 mt-1">Optionale Module können (wenn im Betrieb nicht relevant) deaktiviert sein.</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="resetBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">Fortschritt zurücksetzen</button>
+          <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Abmelden</button>
+        </div>
+      </div>
+
+      <div id="courses" class="space-y-4"></div>
+
+      <div id="certificateSection" class="hidden mt-6 bg-white border border-gray-200 rounded-xl p-5">
+        <h2 class="text-xl font-bold mb-2">Zertifikat</h2>
+        <p class="mb-4">Alle aktivierten Module wurden erfolgreich abgeschlossen. Du kannst jetzt dein Zertifikat herunterladen.</p>
+
+        <label class="block mb-2 font-semibold" for="userNameInput">Name für das Zertifikat:</label>
+        <input id="userNameInput" type="text" class="border border-gray-300 rounded px-3 py-2 w-full mb-3" placeholder="Vorname Nachname">
+
+        <div class="flex flex-wrap gap-2">
+          <button id="downloadCertificateBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Zertifikat herunterladen (PDF)</button>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">
+          Das Zertifikat enthält Datum, Modulanzahl und deine Scores.
+        </p>
+      </div>
+    </div>
+
+    <footer class="mt-8">
+      <h2 class="font-semibold mb-2">Hinweise zur Nutzung</h2>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>Speicherung erfolgt lokal im Browser pro Benutzer (E-Mail). Bei Browser-Wechsel oder gelöschtem Speicher ist der Fortschritt weg.</li>
+        <li>Wenn du Inhalte nicht aufklappen kannst: Seite neu laden, ggf. Browser-Erweiterungen (Adblocker) testweise deaktivieren.</li>
+      </ul>
+    </footer>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const activateBtn = document.getElementById('activateBtn');
+      const resetBtn = document.getElementById('resetBtn');
+
+      const loggedOut = document.getElementById('logged-out');
+      const loggedIn = document.getElementById('logged-in');
+
+      const coursesContainer = document.getElementById('courses');
+
+      const certificateSection = document.getElementById('certificateSection');
+      const downloadCertificateBtn = document.getElementById('downloadCertificateBtn');
+      const userNameInput = document.getElementById('userNameInput');
+
+      const progressWrapper = document.getElementById('progressWrapper');
+      const progressText = document.getElementById('progressText');
+      const userText = document.getElementById('userText');
+      const progressBar = document.getElementById('progressBar');
+
+      // Optional-Module: schalte nur an, wenn ihr es im Betrieb wirklich anbietet
+      const ENABLED = {
+        biostoffe: true,      // Blutuntersuchungen/Abstriche etc.
+        jugendliche: false,   // U18 im Betrieb
+        impfen: false,        // Impfangebot
+        substitution: false,  // Substitution
+        ki: true              // KI-Tools genutzt
+      };
+
+      const allCourses = [
+        {
+          id: "qm",
+          enabled: true,
+          optional: false,
+          title: "Modul 1: Qualitätsmanagement und Apothekenbetrieb",
+          intro: "Sie verstehen, warum ein Qualitätsmanagementsystem (QM‑System) in der Apotheke erforderlich ist und welchen Zweck es erfüllt. Sie kennen die gesetzlichen Vorgaben der Apothekenbetriebsordnung (ApBetrO) und können die…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie verstehen, warum ein Qualitätsmanagementsystem (QM‑System) in der Apotheke erforderlich ist und welchen Zweck es erfüllt.</p>
+<p>Sie kennen die gesetzlichen Vorgaben der Apothekenbetriebsordnung (ApBetrO) und können die Anforderungen an die regelmäßige Unterweisung des Personals erläutern<sup class='text-xs align-super text-slate-500'>[1]</sup>.</p>
+<p>Sie wissen, wie ein QM‑System aufgebaut ist und welche Dokumentationspflichten bestehen<sup class='text-xs align-super text-slate-500'>[2]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Apothekenbetriebsordnung (ApBetrO) § 3: Der Apothekenleiter darf Mitarbeitende nur entsprechend ihrer Ausbildung einsetzen. Er muss sie „zu Anfang und danach fortlaufend“ unterweisen; die Unterweisung muss sowohl die Theorie als auch die Anwendung des Qualitätsmanagementsystems umfassen<sup class='text-xs align-super text-slate-500'>[1]</sup>.</p>
+<p>ApBetrO § 2a: Jede öffentliche Apotheke muss ein QM‑System einrichten, das alle betrieblichen Abläufe beschreibt, dokumentiert und regelmäßig durch Selbstinspektionen überprüft wird<sup class='text-xs align-super text-slate-500'>[2]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Bedeutung des QM‑Systems: Ein QM‑System gewährleistet, dass alle Prozesse – von der Warenbeschaffung über die Herstellung bis zur Abgabe an den Patienten – definiert, nachvollziehbar und reproduzierbar sind. Es sichert die Einhaltung der gesetzlichen Vorgaben und minimiert Risiken durch Fehler oder Abweichungen. Eine gut dokumentierte Prozesslandschaft erleichtert außerdem die Einarbeitung neuer Mitarbeitender und die Qualitätssicherung.</p>
+<p>Aufbau eines QM‑Systems: Typische Bestandteile sind:</p>
+<p>QM‑Handbuch – mit Leitlinien, Organigramm, Verantwortlichkeiten.</p>
+<p>Standardarbeitsanweisungen (SOPs) – detaillierte Anweisungen für alle wiederkehrenden Prozesse (Herstellung, Prüfung, Beratung, Lagerung).</p>
+<p>Formblätter und Checklisten – zur Dokumentation von Herstellungs‑ und Prüfvorgängen, Temperaturkontrollen oder Selbstinspektionen.</p>
+<p>Risikomanagement – Verfahren zur Ermittlung und Bewertung von Risiken und zur Festlegung von Maßnahmen.</p>
+<p>Korrektur‑ und Vorbeugemaßnahmen – System zur Meldung und Bearbeitung von Fehlern oder Abweichungen.</p>
+<p>Rolle des Personals: Jede*r Mitarbeitende muss mit den für seine/ihre Tätigkeit relevanten SOPs vertraut sein, diese einhalten und Abweichungen melden. Hilfspersonal ist verpflichtet, bei Unklarheiten Rücksprache mit pharmazeutischem Personal zu halten. Der Apothekenleiter trägt die Gesamtverantwortung.</p>
+<p>Dokumentation und Nachweise: Alle Unterweisungen, Schulungen und Selbstinspektionen müssen dokumentiert werden. Die Unterlagen dienen als Nachweis gegenüber Behörden und im Rahmen der Rechenschaftspflicht. Änderungen an Prozessen oder Abläufen sind ebenfalls zu dokumentieren und zu archivieren.</p>
+<p>Regelmäßige Überprüfung und Aktualisierung: Das QM‑System lebt von der kontinuierlichen Verbesserung. Selbstinspektionen sollen Schwachstellen aufdecken; Feedback von Mitarbeitenden ist einzubeziehen. Gesetzesänderungen oder neue pharmazeutische Erkenntnisse müssen zeitnah integriert werden.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Einführung neuer Mitarbeitender: Zu Beginn des Arbeitsverhältnisses erhalten Mitarbeitende einen Überblick über das QM‑System, die betriebsspezifischen SOPs und die Dokumentationspflichten.</p>
+<p>Fortlaufende Schulungen: Mindestens einmal pro Jahr findet eine Auffrischung zu den QM‑relevanten Themen statt. Bei Änderungen der SOPs werden betroffene Mitarbeitende sofort unterwiesen.</p>
+<p>Transparenz und Beteiligung: Die QM‑Dokumente sollten für alle Mitarbeitenden zugänglich sein, z. B. in digitaler Form oder in einem Ordner im Backoffice. Mitarbeitende sollten ermutigt werden, Verbesserungsvorschläge zu machen.</p>
+<p>Selbstinspektionen: Planen Sie interne Audits, um zu überprüfen, ob die Arbeitsprozesse konform ablaufen. Führen Sie Checklisten und dokumentieren Sie festgestellte Abweichungen sowie die ergriffenen Maßnahmen.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Warum ist ein Qualitätsmanagementsystem in öffentlichen Apotheken gesetzlich vorgeschrieben?</li>
+<li>Was muss die Unterweisung des Personals nach ApBetrO § 3 beinhalten[1]?</li>
+<li>Nennen Sie drei Bestandteile eines QM‑Systems und erläutern Sie deren Zweck.</li>
+<li>Wie oft sollten Selbstinspektionen durchgeführt werden und warum sind sie wichtig?</li>
+<li>Was muss dokumentiert werden, um die Rechenschaftspflicht im Rahmen des QM zu erfüllen[2]?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Wozu dient ein Qualitätsmanagementsystem (QMS) in der Apotheke am besten?",
+              options: ["Zur Planung von Marketingaktionen.", "Zur Festlegung und Dokumentation sicherer Abläufe und zur Sicherung der Qualität/Patientensicherheit.", "Nur zur Lagerverwaltung.", "Nur zur Personalplanung."],
+              correctIndex: 1
+            },
+            {
+              question: "Was ist eine SOP?",
+              options: ["Ein kurzer Hinweis ohne Details.", "Eine Standardarbeitsanweisung mit Schritten, Verantwortlichkeiten und Dokumentationspunkten.", "Ein Kassenbeleg.", "Ein Dienstplan."],
+              correctIndex: 1
+            },
+            {
+              question: "Was ist bei Abweichungen/Fehlern korrekt?",
+              options: ["Ignorieren, wenn nichts passiert ist.", "Melden und dokumentieren, damit Maßnahmen abgeleitet werden können.", "Nur mündlich im Team erzählen.", "Erst am Jahresende besprechen."],
+              correctIndex: 1
+            },
+            {
+              question: "Warum sind Selbstinspektionen wichtig?",
+              options: ["Sie ersetzen die Beratung.", "Sie prüfen, ob Prozesse wie beschrieben eingehalten werden und verbessern die Qualität.", "Sie dienen nur der Umsatzsteigerung.", "Sie sind nur bei Neubauten nötig."],
+              correctIndex: 1
+            }
+          ]
+        },
+        {
+          id: "hygiene",
+          enabled: true,
+          optional: false,
+          title: "Modul 2: Hygiene und Infektionsschutz",
+          intro: "Sie verstehen die Anforderungen an einen Hygieneplan gemäß ApBetrO § 4a[3] und wissen, wie dieser umgesetzt wird. Sie erkennen Infektionsrisiken bei der Herstellung, Prüfung und Abgabe von Arzneimitteln sowie bei…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie verstehen die Anforderungen an einen Hygieneplan gemäß ApBetrO § 4a<sup class='text-xs align-super text-slate-500'>[3]</sup> und wissen, wie dieser umgesetzt wird.</p>
+<p>Sie erkennen Infektionsrisiken bei der Herstellung, Prüfung und Abgabe von Arzneimitteln sowie bei Blutuntersuchungen und können geeignete Schutzmaßnahmen anwenden<sup class='text-xs align-super text-slate-500'>[4]</sup>.</p>
+<p>Sie wissen, wie häufig Hygieneschulungen durchzuführen und welche Inhalte zu vermitteln sind.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>ApBetrO § 4a: Der Apothekenleiter muss geeignete Hygienemaßnahmen für Personal und Räume festlegen. Der Hygieneplan muss Angaben zur Häufigkeit und Art der Reinigung, zur Desinfektion und zur Schutzkleidung enthalten und ist zu dokumentieren<sup class='text-xs align-super text-slate-500'>[3]</sup>.</p>
+<p>BioStoffV § 14: Für Tätigkeiten mit biologischen Arbeitsstoffen (z. B. Blutuntersuchungen) muss der Arbeitgeber eine arbeitsbereichsbezogene Betriebsanweisung erstellen. Beschäftigte müssen vor Tätigkeitsbeginn und mindestens jährlich mündlich unterwiesen werden<sup class='text-xs align-super text-slate-500'>[4]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Hygieneplan verstehen und anwenden: Der Hygieneplan beschreibt, wie häufig verschiedene Bereiche (Verkaufsraum, Rezeptur, Labor, Lagerräume) gereinigt und desinfiziert werden müssen, welche Mittel verwendet werden und welche Flächen wie behandelt werden. Er legt auch fest, welche Schutzkleidung (Kittel, Handschuhe, Mund‑Nasen‑Schutz) bei welchen Tätigkeiten zu tragen ist und wo diese zu entsorgen ist.</p>
+<p>Persönliche Hygiene: Händehygiene ist das wichtigste Mittel zur Infektionsprävention. Hände sind vor Arbeitsbeginn, nach dem Toilettengang, nach Kontakt mit potenziell kontaminiertem Material und vor sowie nach dem Anfassen von Arzneimitteln oder Medizinprodukten gründlich zu waschen und zu desinfizieren. Schmuck, lange Fingernägel und lackierte Nägel sind bei Herstellungs‑ und Prüfarbeiten nicht zulässig.</p>
+<p>Umgang mit biologischen Proben: Bei Blutzucker‑ oder Cholesterinmessungen können biologisch gefährliche Stoffe auftreten. Es ist darauf zu achten, Testmaterial nur mit Handschuhen anzufassen, nach Gebrauch in stichfesten Behältern zu entsorgen, verschüttete Proben sofort zu desinfizieren und bei Stichverletzungen unverzüglich Erste Hilfe zu leisten und den Vorfall zu melden.</p>
+<p>Gerätehygiene: Medizinprodukte (z. B. Blutzuckermessgeräte) müssen nach jedem Patientenkontakt desinfiziert oder mit Einweg‑Schutzhüllen versehen werden. Regelmäßige Wartung und hygienische Aufbereitung sind dokumentationspflichtig.</p>
+<p>Zuspiel mit Herstellungsprozessen: Keine gleichzeitig ablaufenden Tätigkeiten (z. B. Herstellung von Rezepturen) in Bereichen, die durch Patientenkontakt verunreinigt sind. Arbeitsflächen müssen vor dem Beginn hygienischer Arbeiten gereinigt und desinfiziert werden.</p>
+<p>Infektionsschutz bei Kontakten: Bei Impfungen, Blutzuckermessungen oder Abstrichen müssen Mitarbeitende den hygienischen Ablauf einhalten (Sterile Materialien, korrekte Entsorgung, Schutzkleidung). Notfallmaßnahmen bei Kontamination (z. B. Exposition gegenüber Blut) beinhalten Sofortdesinfektion, Wundversorgung und ärztliche Abklärung.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Regelmäßige Schulung: Hygieneschulungen erfolgen mindestens jährlich und bei Änderungen im Hygieneplan oder neuen Infektionsrisiken (z. B. neue Infektionskrankheiten). Sie sollten praktische Übungen (z. B. richtiges Händewaschen) enthalten.</p>
+<p>Zugängliche Dokumente: Hygienepläne und Betriebsanweisungen müssen für alle Mitarbeitenden gut sichtbar ausgehängt oder digital zugänglich sein. Änderungen sind unverzüglich zu kommunizieren.</p>
+<p>Monitoring und Feedback: Qualitätskontrollen (z. B. Abklatschproben) können die Wirksamkeit der Reinigung überprüfen. Mitarbeitende sollen Verbesserungsvorschläge zur Hygienepraxis mitteilen.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Welche Angaben muss der Hygieneplan laut ApBetrO § 4a enthalten[3]?</li>
+<li>Wie oft muss eine mündliche Unterweisung für Tätigkeiten mit Biostoffen nach BioStoffV durchgeführt werden[4]?</li>
+<li>Nennen Sie drei Situationen, in denen eine Händedesinfektion zwingend erforderlich ist.</li>
+<li>Wie entsorgen Sie gebrauchte Blutlanzetten und Teststreifen korrekt?</li>
+<li>Welche Schutzmaßnahmen sind bei der Durchführung von Blutuntersuchungen einzuhalten?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Welche Maßnahme reduziert am stärksten das Kontaminationsrisiko in Rezeptur/Labor?",
+              options: ["Handschuhe ohne Händedesinfektion.", "Arbeitsflächen vor Beginn reinigen und desinfizieren.", "Nur schnell arbeiten.", "Offene Produkte neben Kundenverkehr herstellen."],
+              correctIndex: 1
+            },
+            {
+              question: "Wann sollen Einmalhandschuhe angezogen werden?",
+              options: ["Vor dem Händewaschen.", "Nach dem Händewaschen und Desinfizieren.", "Erst nach dem Abfüllen.", "Nur bei Erkältung."],
+              correctIndex: 1
+            },
+            {
+              question: "Was muss im Hygieneplan geregelt sein?",
+              options: ["Urlaubsplanung.", "Häufigkeit/Art der Reinigung und Desinfektion inkl. Mittel/Geräte und Dokumentation.", "Preisgestaltung.", "Werbung in Social Media."],
+              correctIndex: 1
+            },
+            {
+              question: "Was ist bei offener Herstellung zusätzlich sinnvoll?",
+              options: ["Schmuck tragen.", "Mund-Nasen-Schutz tragen.", "Kittel offen lassen.", "Haare offen tragen."],
+              correctIndex: 1
+            }
+          ]
+        },
+        {
+          id: "herstellung",
+          enabled: true,
+          optional: false,
+          title: "Modul 3: Herstellung, Prüfung, Lagerung, Verblistern und Stellen",
+          intro: "Sie können die gesetzlichen Anforderungen an die Herstellung, Prüfung, Lagerung und Verblisterung/Stellung von Arzneimitteln erklären. Sie kennen die notwendigen Dokumentationspflichten und können typische…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie können die gesetzlichen Anforderungen an die Herstellung, Prüfung, Lagerung und Verblisterung/Stellung von Arzneimitteln erklären.</p>
+<p>Sie kennen die notwendigen Dokumentationspflichten und können typische Fehlerquellen benennen.</p>
+<p>Sie wissen, wie Sie eine sichere Verblisterung und patientenindividuelle Versorgung sicherstellen.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>ApBetrO § 3: Der Apothekenleiter darf Mitarbeitende nur gemäß ihrer Ausbildung einsetzen; sie müssen regelmäßig über die bei ihren Tätigkeiten erforderliche Sorgfalt, insbesondere die Herstellung, Prüfung und Lagerung von Arzneimitteln, unterwiesen werden<sup class='text-xs align-super text-slate-500'>[1]</sup>.</p>
+<p>ApBetrO § 2a: Das QM‑System muss auch die Herstellungs‑, Prüf‑ und Lagerprozesse abdecken und ihre Dokumentation sicherstellen<sup class='text-xs align-super text-slate-500'>[2]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Herstellung (Rezeptur und Defektur):</p>
+<p>Vorbereitung: Überprüfung des Rezepts (z. B. Plausibilitätsprüfung, Wirkstoffinteraktionen), Bereitstellung geprüfter Ausgangsstoffe, persönliche Schutzausrüstung.</p>
+<p>Herstellungsprozess: Arbeiten nach SOP; Kontrolle der Einwaagen, Verwendung geeichter Waagen und Messgeräte; Durchführung der Herstellung unter hygienischen Bedingungen; Kennzeichnung mit Herstellungsdatum, Haltbarkeit und Chargennummer; Dokumentation aller Schritte (Herstellungsprotokoll).</p>
+<p>Kreuzkontamination vermeiden: Bereichstrennung, Reinigung und Desinfektion der Arbeitsfläche, Einmalgebrauch von Mischspateln/Einwegpipetten oder Reinigung gemäß SOP.</p>
+<p>Prüfung:</p>
+<p>Identitätsprüfung: mittels Dünnschichtchromatographie, Schmelzpunktbestimmung oder externen Zertifikaten; Dokumentation der Prüfergebnisse.</p>
+<p>Reinheitsprüfung und Gehalt: Nach Arzneibuchmethoden; Prüfung auf Verunreinigungen; Einsatz von Referenzstandards.</p>
+<p>Freigabe: Zweitkontrolle durch weiteres qualifiziertes Personal; Signatur und Datum; ggf. Prüfung vor Abgabe an den Patienten.</p>
+<p>Lagerung:</p>
+<p>Temperaturführung: Einige Arzneimittel benötigen Kühlschranktemperaturen (2–8 °C), andere Raumtemperatur. Temperaturüberwachung und Dokumentation (z. B. Temperaturblätter, Datenlogger) sind verpflichtend.</p>
+<p>Licht‑ und Feuchtigkeitsschutz: Lagerung in der Originalverpackung; Lichtschutzbehälter; getrennte Lagerung von Arzneimitteln, die Feuchtigkeit ziehen.</p>
+<p>Bestandskontrolle: Regelmäßige Inventur; Überwachung von Verfallsdaten; First‑In‑First‑Out (FIFO); Dokumentation von Abgängen.</p>
+<p>Betäubungsmittel: Separater verschlossener Schrank; Zugang nur für befugtes Personal; Kontrolle nach BtMG.</p>
+<p>Verblistern und patientenindividuelles Stellen:</p>
+<p>Arbeitsplatzvorbereitung: Sauberer, ablenkungsfreier Bereich; Zusammenstellung der Medikamente anhand ärztlicher Verordnungen; zweifache Kontrolle durch zwei Personen (Vier‑Augen‑Prinzip).</p>
+<p>Einteilung in Wochenblister oder Einnahmefächer: Klare Zuordnung nach Tageszeit; Kennzeichnung mit Name, Geburtsdatum und Medikamentenliste.</p>
+<p>Dokumentation: Protokollierung des Blistervorgangs, Unterschrift beider kontrollierender Personen; Aufbewahrung für Nachweispflichten.</p>
+<p>Kommunikation mit Patienten/Heimen: Informationen über Änderungen im Medikamentenplan; Rückfragen bei Unklarheiten mit Arzt/Ärztin.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Standardisierte Herstellungsanweisungen: Halten Sie alle Schritte in SOPs fest. Bei neuen Rezepturen ist eine Plausibilitätsprüfung durch einen Apothekerin unerlässlich.</p>
+<p>Qualitätssicherung: Jeder Herstellungs‑ und Prüfvorgang erfordert Protokolle. Unterschriften von Herstellendem und Kontrollierendem sind verpflichtend.</p>
+<p>Lagerkontrollen: Regelmäßig (z. B. wöchentlich) Kühlschranktemperaturen dokumentieren; definieren Sie Schwellenwerte und Maßnahmen bei Abweichungen.</p>
+<p>Blisterkontrolle: Nutzen Sie Checklisten. Legen Sie fest, wie mit Änderungen in der Medikation umzugehen ist. Verwenden Sie bei Fehlern das Fehlermanagement des QM‑Systems.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Welche Schritte umfasst eine ordnungsgemäße Rezepturherstellung, und welche Dokumentationspflichten sind damit verbunden?</li>
+<li>Warum ist das Vier‑Augen‑Prinzip bei der Prüfung und beim Verblistern wichtig, und wie wird es umgesetzt?</li>
+<li>Was ist beim Lagern von Arzneimitteln, die gekühlt werden müssen, zu beachten?</li>
+<li>Wie erfolgt die Dokumentation des Verblisterungsprozesses?</li>
+<li>Welche Vorkehrungen treffen Sie, um Kreuzkontamination während der Herstellung zu vermeiden?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Was ist bei Rezeptur/Defektur grundsätzlich erforderlich?",
+              options: ["Keine Dokumentation.", "Arbeiten nach SOP und Herstellungs-/Prüfprotokoll.", "Nur mündliche Übergabe.", "Etikett ist optional."],
+              correctIndex: 1
+            },
+            {
+              question: "Warum ist Temperaturüberwachung bei Kühlware wichtig?",
+              options: ["Nur für Optik.", "Sichert Qualität/Wirkstabilität und ermöglicht Maßnahmen bei Abweichung.", "Nur für BtM.", "Nur bei Sommerhitze."],
+              correctIndex: 1
+            },
+            {
+              question: "Wofür steht FIFO in der Lagerhaltung?",
+              options: ["First In – First Out.", "Fast In – Fast Out.", "First In – Fixed Output.", "Free In – Free Out."],
+              correctIndex: 0
+            },
+            {
+              question: "Welche Aussage zum Stellen/Verblistern ist korrekt?",
+              options: ["Vier-Augen-Prinzip ist optional.", "Medikationsplan-Abgleich und eindeutige Patientenzuordnung sind zentral.", "Dokumentation ist nicht nötig.", "Man kann nebenbei telefonieren."],
+              correctIndex: 1
+            }
+          ]
+        },
+        {
+          id: "arbeitsschutz",
+          enabled: true,
+          optional: false,
+          title: "Modul 4: Arbeits‑ und Gesundheitsschutz (Grundunterweisung)",
+          intro: "Sie können die allgemeine Unterweisungspflicht des Arbeitgebers nach ArbSchG § 12 beschreiben und wissen, wann Unterweisungen stattfinden müssen[5]. Sie kennen die Inhalte einer Grundunterweisung und können diese in…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie können die allgemeine Unterweisungspflicht des Arbeitgebers nach ArbSchG § 12 beschreiben und wissen, wann Unterweisungen stattfinden müssen<sup class='text-xs align-super text-slate-500'>[5]</sup>.</p>
+<p>Sie kennen die Inhalte einer Grundunterweisung und können diese in Ihrer Apotheke umsetzen.</p>
+<p>Sie verstehen, wie ergonomisches Arbeiten dazu beiträgt, Arbeitsunfälle und Erkrankungen zu vermeiden.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Arbeitsschutzgesetz (ArbSchG) § 12: Arbeitgeber müssen ihre Beschäftigten bei Einstellung, bei Veränderungen des Aufgabenbereichs oder der Arbeitsmittel und „in angemessenen Abständen“ unterweisen. Die Unterweisung muss auf den jeweiligen Arbeitsplatz und die spezifischen Aufgaben abgestimmt sein und erfolgt während der Arbeitszeit<sup class='text-xs align-super text-slate-500'>[5]</sup>.</p>
+<p>DGUV‑Vorschriften und Regeln: Ergänzende Vorschriften der Deutschen Gesetzlichen Unfallversicherung konkretisieren, wie Unterweisungen zu verschiedenen Themen (Brand, Erste Hilfe, Gefahrstoffe) zu gestalten sind.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Grundlagen des Arbeitsschutzes: Vorstellung der gesetzlichen Pflichten, der Verantwortung des Arbeitgebers und der Mitarbeitenden. Erklärung, dass Sicherheit und Gesundheitsschutz integraler Bestandteil des Arbeitsverhältnisses sind.</p>
+<p>Gefährdungsbeurteilung: Erklärung, wie Gefährdungen ermittelt werden (z. B. Stolperfallen, elektrische Geräte, scharfe Werkzeuge, Gefahrstoffe). Mitarbeitende sollen Gefährdungen erkennen und melden können.</p>
+<p>Persönliche Schutzausrüstung (PSA): Notwendigkeit und richtige Nutzung von Kitteln, Handschuhen, Schutzbrillen und Sicherheitsschuhen; Hinweise zum korrekten An- und Ablegen.</p>
+<p>Betriebswege und Ordnung: Freihalten von Fluchtwegen, sichere Aufbewahrung von Medikamentenkartons, Umgang mit Leitern und Tritthilfen. Ordnung am Arbeitsplatz reduziert Unfallgefahren.</p>
+<p>Ergonomisches Arbeiten: Richtige Arbeitshöhen einstellen, dynamisches Sitzen, regelmäßige Positionswechsel, Einsatz ergonomischer Hilfsmittel, rückenschonendes Heben und Tragen (siehe Kapitel 10). Hinweise auf Pausengestaltung.</p>
+<p>Verhalten bei Gefahr: Alarmierung, Evakuierung, Sammelplatz, Meldung von Unfällen oder Beinahe‑Unfällen, Dokumentation im Verbandbuch.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Zeitpunkt: Eine Grundunterweisung erfolgt bei Eintritt in die Apotheke. Wiederholungen sind mindestens jährlich erforderlich; bei relevanten Änderungen (neue Geräte, Umbau) erfolgt eine sofortige Unterweisung.</p>
+<p>Didaktik: Ergänzen Sie theoretische Inhalte mit Praxisbeispielen. Nutzen Sie Begehungen der Apothekenräume, um Gefahrenquellen zu zeigen. Stellen Sie sicher, dass die Inhalte verstanden wurden, indem Sie Nachfragen und Feedback einholen.</p>
+<p>Dokumentation: Halten Sie die Inhalte, das Datum der Unterweisung und die Namen der Teilnehmer*innen fest. Lassen Sie die Teilnahme unterschreiben.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Wann muss eine arbeitsschutzrechtliche Unterweisung durchgeführt werden[5]?</li>
+<li>Welche Aspekte gehören in eine Grundunterweisung zum Arbeitsschutz?</li>
+<li>Warum ist ergonomisches Arbeiten wichtig, und wie können Sie es im Apothekenalltag umsetzen?</li>
+<li>Was ist eine Gefährdungsbeurteilung und wie wird sie erstellt?</li>
+<li>Wie dokumentieren Sie Unterweisungen im Arbeitsschutz?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Wann muss eine Arbeitsschutzunterweisung stattfinden?",
+              options: ["Nur bei Notdienst.", "Bei Einstellung, Änderungen der Tätigkeit/Arbeitsmittel und regelmäßig.", "Nur bei Inventur.", "Nie."],
+              correctIndex: 1
+            },
+            {
+              question: "Wie solltest du mit Beinahe-Unfällen umgehen?",
+              options: ["Ignorieren.", "Melden, damit Präventionsmaßnahmen möglich sind.", "Nur privat notieren.", "Erst nach Monaten."],
+              correctIndex: 1
+            },
+            {
+              question: "Was ist eine typische Arbeitsschutzmaßnahme im Alltag?",
+              options: ["Fluchtwege zustellen.", "Wege frei halten und geeignete PSA nutzen.", "Geräte ohne Einweisung benutzen.", "Keine Pausen machen."],
+              correctIndex: 1
+            },
+            {
+              question: "Wo wird eine Erste-Hilfe-Leistung dokumentiert?",
+              options: ["Verbandbuch/Erste-Hilfe-Dokumentation.", "Kassenbuch.", "Rezepturprotokoll.", "Wareneingang."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "brandschutz",
+          enabled: true,
+          optional: false,
+          title: "Modul 5: Brandschutz",
+          intro: "Sie kennen die gesetzlichen Vorgaben für Brandschutzunterweisungen und wissen, wie oft diese stattfinden müssen[6]. Sie können Brandgefahren erkennen und wissen, wie Sie einen Entstehungsbrand richtig bekämpfen.",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie kennen die gesetzlichen Vorgaben für Brandschutzunterweisungen und wissen, wie oft diese stattfinden müssen<sup class='text-xs align-super text-slate-500'>[6]</sup>.</p>
+<p>Sie können Brandgefahren erkennen und wissen, wie Sie einen Entstehungsbrand richtig bekämpfen.</p>
+<p>Sie kennen die Aufgaben von Brandschutzhelfern und die Anforderungen an deren Ausbildung.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>ArbSchG § 10: Arbeitgeber müssen Maßnahmen für den Brandschutz und die Evakuierung treffen und hierfür Beschäftigte benennen<sup class='text-xs align-super text-slate-500'>[7]</sup>.</p>
+<p>DGUV‑Information 205‑023: Konkretisiert, dass alle Mitarbeitenden mindestens einmal pro Jahr eine Brandschutzunterweisung erhalten müssen, die Alarmierungswege, Löschmittel, Fluchtwege und Verhalten bei Brand abdeckt<sup class='text-xs align-super text-slate-500'>[8]</sup>. Es wird empfohlen, ca. 5 % der Mitarbeitenden als Brandschutzhelfer auszubilden<sup class='text-xs align-super text-slate-500'>[9]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Brandgefahren identifizieren: Brennbare Flüssigkeiten (z. B. Alkohole), elektrischer Strom, überhitzte Geräte, offenes Feuer (z. B. Bunsenbrenner). Erklärung der Brandklassen (A, B, C, D, F) und der spezifischen Löschmittel.</p>
+<p>Brandverhütung: Ordnungsgemäße Lagerung von brennbaren Stoffen, sichere Elektroinstallationen, regelmäßige Wartung von Geräten, Verbot von offenen Flammen in bestimmten Bereichen, Kontrolle von Wärmequellen.</p>
+<p>Alarmierung: Wie wird im Brandfall der Alarm ausgelöst (Feuermelder, Telefon), wer wird benachrichtigt (Feuerwehr, interne Stelle), und welche Informationen (Ort, Art des Brandes) sind wichtig.</p>
+<p>Löschmittel und Löschtechnik: Handhabung verschiedener Feuerlöscher (Wasser, Schaum, Pulver, CO₂), Löschdecken, Wandhydranten. Erläuterung der Funktionsweise und Grenzen. Praktische Übungen zum Löschen von Entstehungsbränden unter Anleitung qualifizierter Ausbilder.</p>
+<p>Evakuierung und Fluchtwege: Lage von Flucht‑ und Rettungswegen, Notausgänge, Sammelplätze. Hinweise zum Verhalten im Rauch (Krabbeln am Boden, Fluchthauben). Umgang mit Aufzügen (nicht benutzen) und die Reihenfolge bei der Rettung von Personen.</p>
+<p>Brandschutzhelfer: Aufgaben (Alarmierung, Unterstützung der Evakuierung, Bekämpfung von Entstehungsbränden), Dauer und Inhalte der Ausbildung (z. B. praktische Löschübungen, Kenntnisse der Brandmeldeanlage), Voraussetzungen (körperliche Eignung, Engagement).</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Jährliche Unterweisungen: Alle Mitarbeitenden nehmen an einer theoretischen Schulung teil. Brandschutzhelfer benötigen zusätzlich praktische Übungen.</p>
+<p>Realitätsnahe Übungen: Führen Sie regelmäßige Räumungsübungen durch. Wechseln Sie Szenarien (z. B. Brand im Labor vs. Lager), um Routine zu verhindern.</p>
+<p>Check der Ausrüstung: Kontrollieren Sie regelmäßig Feuerlöscher, Rauchmelder und Fluchtwege. Dokumentieren Sie Prüfungen und Wartungen.</p>
+<p>Kombination mit Erste‑Hilfe‑Themen: Notfallsituationen überschneiden sich; integrieren Sie Informationen zum Umgang mit Brandwunden und Rauchgasvergiftung.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Wie oft müssen Mitarbeitende in Apotheken zum Thema Brandschutz unterwiesen werden[8]?</li>
+<li>Was ist bei der Alarmierung im Brandfall zu beachten?</li>
+<li>Welche Brandklassen kennen Sie, und welche Löschmittel sind jeweils geeignet?</li>
+<li>Welche Aufgaben übernimmt ein Brandschutzhelfer[9]?</li>
+<li>Was ist der Sammelplatz, und warum ist er wichtig?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Was ist der erste Schritt bei Brandentdeckung?",
+              options: ["Filmen.", "Alarmieren (intern/112) und dann evakuieren.", "Erst aufräumen.", "Ignorieren."],
+              correctIndex: 1
+            },
+            {
+              question: "Fluchtwege müssen…",
+              options: ["jederzeit frei sein.", "zugestellt werden dürfen.", "nur im Notdienst frei sein.", "nur bei Übungen frei sein."],
+              correctIndex: 0
+            },
+            {
+              question: "Feuerlöscher sollten eingesetzt werden…",
+              options: ["immer, egal wie groß das Feuer.", "nur bei Entstehungsbrand und ohne Eigengefährdung.", "nur von Kund:innen.", "nie."],
+              correctIndex: 1
+            },
+            {
+              question: "Aufzug im Brandfall?",
+              options: ["Nicht benutzen.", "Benutzen, um schneller zu sein.", "Nur mit Chef.", "Egal."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "erstehilfe",
+          enabled: true,
+          optional: false,
+          title: "Modul 6: Erste Hilfe (Ersthelfer)",
+          intro: "Sie wissen, wie viele Ersthelfer in einer Apotheke vorhanden sein müssen und welche Qualifikation sie benötigen[10]. Sie kennen die zentralen Maßnahmen der Ersten Hilfe und können diese anwenden.",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie wissen, wie viele Ersthelfer in einer Apotheke vorhanden sein müssen und welche Qualifikation sie benötigen<sup class='text-xs align-super text-slate-500'>[10]</sup>.</p>
+<p>Sie kennen die zentralen Maßnahmen der Ersten Hilfe und können diese anwenden.</p>
+<p>Sie verstehen die Bedeutung regelmäßiger Auffrischungen und der Dokumentation von Erste‑Hilfe‑Schulungen.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>ArbSchG § 10: Verpflichtet den Arbeitgeber, Erste‑Hilfe-Maßnahmen vorzubereiten und Mitarbeitende für diese Aufgabe zu benennen<sup class='text-xs align-super text-slate-500'>[7]</sup>.</p>
+<p>DGUV Vorschrift 1 § 26: Bei 2–20 anwesenden Beschäftigten muss mindestens eine Person als Ersthelfer ausgebildet sein; in Verwaltungs‑ und Handelsbetrieben gilt ab 20 Personen eine Quote von 5 %<sup class='text-xs align-super text-slate-500'>[10]</sup>. Ersthelfer müssen eine Ausbildung bei anerkannten Stellen absolvieren und alle zwei Jahre fortgebildet werden<sup class='text-xs align-super text-slate-500'>[11]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Rechtsrahmen und Organisation: Vorstellung der gesetzlichen Anforderungen; Anzahl der Ersthelfer; Aufgaben der Ersthelfer; Notrufnummern und Meldekette.</p>
+<p>Erkennen von Notfällen: Einschätzung der Lage, Eigenschutz, Ansprechen der betroffenen Person, Notruf absetzen.</p>
+<p>Lebensrettende Sofortmaßnahmen:</p>
+<p>Stabile Seitenlage bei bewusstlosen, aber atmenden Personen.</p>
+<p>Herz‑Lungen‑Wiederbelebung (HLW): korrekter Rhythmus (30 Kompressionen/2 Beatmungen), Drucktiefe, Kompressionspunkt.</p>
+<p>Automatisierter Externer Defibrillator (AED): Einsatz und Sicherheitsmaßnahmen, Befestigung der Elektroden.</p>
+<p>Versorgung von Verletzungen: Stillen starker Blutungen, Versorgung von Verbrennungen (Kühlen, sterile Abdeckung), Schockvorbeugung (Beine hochlagern, zudecken).</p>
+<p>Umgang mit spezifischen Notfällen in der Apotheke: Allergische Reaktionen, Opiat‑Überdosierungen (Antidot: Naloxon), Ohnmacht, Unterzuckerung, Vergiftungen durch Chemikalien.</p>
+<p>Dokumentation und Nachsorge: Eintrag ins Verbandbuch (Zeit, Art des Unfalls, Maßnahmen), Hinweis auf weitere ärztliche Versorgung, Psychologische Nachsorge für Mitarbeitende.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Regelmäßige Ausbildung und Auffrischung: Ersthelfer müssen ihre Kenntnisse alle zwei Jahre auffrischen. Alle Mitarbeitenden sollten zumindest grundlegende Erste‑Hilfe-Kenntnisse haben, damit sie in Notsituationen helfen können.</p>
+<p>Notfallausrüstung: Verbandkästen, Augen‑ und Körperduschen, AED-Gerät und Notfallsets (z. B. bei Opioidüberdosierung) müssen erreichbar und funktionsfähig sein. Zuständigkeiten für Prüfung und Auffüllen sind zu definieren.</p>
+<p>Szenarientraining: Simulationen realer Situationen (z. B. Ohnmacht im Verkaufsraum) fördern die Handlungssicherheit.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Wie viele Ersthelfer müssen laut DGUV Vorschrift 1 bei 20 Mitarbeitenden vorhanden sein[10]?</li>
+<li>Wer darf als Ersthelfer eingesetzt werden[11]?</li>
+<li>Beschreiben Sie die Schritte der Herz‑Lungen‑Wiederbelebung.</li>
+<li>Welche Maßnahmen sind bei einer schweren Blutung zu ergreifen?</li>
+<li>Wie wird ein Erste‑Hilfe-Einsatz im Verbandbuch dokumentiert?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Welche Information gehört in den Notruf?",
+              options: ["Lieblingsfarbe.", "Wo/Was/Wieviele/Art der Verletzung.", "Wetterbericht.", "Öffnungszeiten."],
+              correctIndex: 1
+            },
+            {
+              question: "Bewusstlos, aber Atmung vorhanden:",
+              options: ["Stabile Seitenlage.", "Essen/Trinken geben.", "Spazieren lassen.", "Allein lassen."],
+              correctIndex: 0
+            },
+            {
+              question: "Keine normale Atmung:",
+              options: ["HLW beginnen und AED nutzen, wenn vorhanden.", "Warten bis Hilfe kommt.", "Wasser geben.", "Nur Puls suchen."],
+              correctIndex: 0
+            },
+            {
+              question: "Warum Verbandbuch?",
+              options: ["Für Marketing.", "Für Nachweis und Unfallanalyse.", "Für Einkaufslisten.", "Für Social Media."],
+              correctIndex: 1
+            }
+          ]
+        },
+        {
+          id: "gefahrstoffe",
+          enabled: true,
+          optional: false,
+          title: "Modul 7: Umgang mit Gefahrstoffen",
+          intro: "Sie verstehen die Pflichten des Arbeitgebers und die Rechte der Beschäftigten im Umgang mit Gefahrstoffen[12]. Sie wissen, wie Gefahrstoffe gekennzeichnet sind und welche Informationen die Betriebsanweisung beinhaltet.",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie verstehen die Pflichten des Arbeitgebers und die Rechte der Beschäftigten im Umgang mit Gefahrstoffen<sup class='text-xs align-super text-slate-500'>[12]</sup>.</p>
+<p>Sie wissen, wie Gefahrstoffe gekennzeichnet sind und welche Informationen die Betriebsanweisung beinhaltet.</p>
+<p>Sie sind in der Lage, Schutzmaßnahmen im Alltag umzusetzen und Notfallsituationen richtig zu handhaben.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Gefahrstoffverordnung (GefStoffV) § 14: Der Arbeitgeber muss für Gefahrstoffe eine schriftliche Betriebsanweisung erstellen, die Informationen über Gefahren, Schutzmaßnahmen, Verhaltensregeln, Notfallmaßnahmen und Erste Hilfe enthält<sup class='text-xs align-super text-slate-500'>[13]</sup>. Beschäftigte müssen vor Aufnahme der Tätigkeit und danach mindestens einmal jährlich mündlich unterwiesen werden, die Unterweisung muss dokumentiert werden<sup class='text-xs align-super text-slate-500'>[14]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Gefährdungsbeurteilung: Identifikation der im Betrieb verwendeten Gefahrstoffe (z. B. Lösungsmittel wie Isopropanol, konzentrierte Säuren, Natronlauge, Ethanol). Bewertung von Eigenschaften wie ätzend, giftig, brennbar. Berücksichtigung von Mengen, Anwendungshäufigkeit und Expositionswegen (Inhalation, Hautkontakt, Verschlucken).</p>
+<p>Kennzeichnung und Sicherheitsdatenblätter: Erklärung der Gefahrensymbole (GHS-Piktogramme), Signalwörter („Gefahr“, „Achtung“), H‑ und P‑Sätze. Nutzung und Bedeutung von Sicherheitsdatenblättern, die detaillierte Informationen zu Gefahren, Lagerung und Notfallmaßnahmen enthalten.</p>
+<p>Betriebsanweisung: Wesentliche Informationen wie Anwendungsbereiche, persönliche Schutzausrüstung (Schutzhandschuhe, Schutzbrille, Laborkittel), Verhaltensregeln (z. B. nie Säure ins Wasser gießen), Maßnahmen im Notfall (Augenspülung, Sammeln verschütteter Stoffe), Erste Hilfe.</p>
+<p>Schutzmaßnahmen:</p>
+<p>Technische Maßnahmen: Absaugvorrichtungen, gut belüftete Arbeitsplätze, explosionssichere Lagerbehälter.</p>
+<p>Organisatorische Maßnahmen: Begrenzte Lagerung, sichere Aufbewahrung in gekennzeichneten Schränken, Zugangsberechtigungen für bestimmte Gefahrstoffe (z. B. zytotoxische Substanzen).</p>
+<p>Persönliche Schutzausrüstung: Auswahl geeigneter Handschuhe (Nitril, Latex), Schutzbrillen, Atemschutz (bei flüchtigen Stoffen), Schutzkleidung.</p>
+<p>Lagerung und Entsorgung: Trennung inkompatibler Stoffe, Einhaltung der Herstellervorgaben, Sammelbehälter für chemische Abfälle, kein Ausgießen in das Abwassersystem. Dokumentation der Entsorgung nach Gefahrstoffrecht.</p>
+<p>Unfälle und Notfälle: Vorgehen bei Hautkontakt oder Augenkontakt (Sofortiges Spülen), Verschütten (Eindämmen mit Bindemittel, Entsorgung als Sondermüll), Einatmen giftiger Dämpfe (Frischluft, ggf. Arzt aufsuchen). Kenntnis der Notrufnummern und Standort des Verbandkastens, der Augendusche und der Notdusche.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Schriftliche Unterweisung und Unterschrift: Die Betriebsanweisung muss schriftlich vorliegen; Beschäftigte müssen durch Unterschrift bestätigen, dass sie die Inhalte verstanden haben.</p>
+<p>Regelmäßige Aktualisierung: Neue Gefahrstoffe oder geänderte Sicherheitsdatenblätter erfordern eine Aktualisierung der Betriebsanweisungen und Unterweisungen.</p>
+<p>Sicherheitskultur: Mitarbeitende werden ermutigt, unsichere Situationen zu melden, Fehler ohne Angst vor Sanktionen zu besprechen und Verbesserungsvorschläge einzubringen.</p>
+<p>Lagerüberprüfung: Regelmäßige Kontrolle der chemischen Lager, Verfallsdaten, korrekte Kennzeichnung.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Welche Informationen müssen in einer Betriebsanweisung für Gefahrstoffe enthalten sein[13]?</li>
+<li>Wie häufig ist eine Unterweisung im Umgang mit Gefahrstoffen vorgeschrieben[14]?</li>
+<li>Nennen Sie drei persönliche Schutzmaßnahmen beim Umgang mit ätzenden Chemikalien.</li>
+<li>Was tun Sie, wenn ein Gefahrstoff verschüttet wird?</li>
+<li>Wo finden Sie detaillierte Informationen zu den Gefahren eines bestimmten Stoffes (H‑ und P‑Sätze)?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Was muss eine Betriebsanweisung zu Gefahrstoffen leisten?",
+              options: ["Nur den Namen nennen.", "Gefahren, Schutzmaßnahmen, Verhalten und Notfallmaßnahmen verständlich darstellen.", "Nur Preise enthalten.", "Nur für Chefs."],
+              correctIndex: 1
+            },
+            {
+              question: "Wie oft sollte die Unterweisung zu Gefahrstoffen mindestens erfolgen?",
+              options: ["Nie.", "Mindestens jährlich und bei Änderungen.", "Alle 10 Jahre.", "Nur im Notdienst."],
+              correctIndex: 1
+            },
+            {
+              question: "Augenkontakt mit ätzendem Stoff:",
+              options: ["Sofort spülen (Augendusche), melden, ärztlich abklären.", "Abwarten.", "Alkohol drauf.", "Nur Pflaster."],
+              correctIndex: 0
+            },
+            {
+              question: "Verschütteter Gefahrstoff:",
+              options: ["In den Abfluss.", "Bereich sichern, nach SOP aufnehmen und korrekt entsorgen.", "Ignorieren.", "Nur lüften."],
+              correctIndex: 1
+            }
+          ]
+        },
+        {
+          id: "biostoffe",
+          enabled: ENABLED.biostoffe,
+          optional: true,
+          title: "Modul 8: Umgang mit Biostoffen / Blutuntersuchungen",
+          intro: "Sie kennen die Anforderungen der BioStoffV § 14 für Tätigkeiten mit biologischen Arbeitsstoffen[4]. Sie verstehen das Risiko von Infektionen durch Blut oder andere Körperflüssigkeiten und können entsprechende…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie kennen die Anforderungen der BioStoffV § 14 für Tätigkeiten mit biologischen Arbeitsstoffen<sup class='text-xs align-super text-slate-500'>[4]</sup>.</p>
+<p>Sie verstehen das Risiko von Infektionen durch Blut oder andere Körperflüssigkeiten und können entsprechende Schutzmaßnahmen anwenden.</p>
+<p>Sie sind in der Lage, Notfallsituationen bei Stich‑ oder Schnittverletzungen richtig zu handhaben.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Biostoffverordnung (BioStoffV) § 14: Für Tätigkeiten mit biologischen Arbeitsstoffen ist eine arbeitsbereichsbezogene Betriebsanweisung zu erstellen; vor Aufnahme der Tätigkeit und mindestens einmal jährlich müssen Beschäftigte mündlich unterwiesen werden<sup class='text-xs align-super text-slate-500'>[4]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Biologische Arbeitsstoffe in der Apotheke: Dazu zählen Mikroorganismen (Bakterien, Viren), Zellkulturen und Endoparasiten. Praktische Beispiele: Blut von Kunden (Blutzucker‑/Cholesterinmessungen), Speichelproben, Abstriche (z. B. für COVID‑Tests), Mikroorganismen bei Rezepturen.</p>
+<p>Risiken: Infektionsgefahr (z. B. HIV, Hepatitis B/C, Covid‑19), allergische Reaktionen, Erregerübertragung durch kontaminierte Geräte. Kleinstmengen reichen für eine Infektion aus.</p>
+<p>Betriebsanweisung: Enthält Informationen über mögliche Erreger, erforderliche Schutzmaßnahmen, hygienisches Verhalten, sicherere Arbeitsabläufe, Notfall‑ und Entsorgungsmaßnahmen. Muss gut lesbar und dauerhaft am Arbeitsplatz angebracht sein.</p>
+<p>Schutzmaßnahmen:</p>
+<p>Persönliche Schutzmaßnahmen: Einmalhandschuhe, ggf. Schutzbrille oder Gesichtsvisier, dicht schließender Kittel, FFP2‑Masken bei Aerosolbildung.</p>
+<p>Verfahrensregeln: Kein Recapping von Nadeln, Verwendung von Sicherheitslanzetten, korrekter Umgang mit Kanülen und Pipetten, sofortige Desinfektion nach der Entnahme.</p>
+<p>Entsorgung: Stichfeste Behälter für scharfe/spitze Gegenstände, separate Abfallbehälter für kontaminierte Materialien, Einhaltung der Vorschriften zur Abfallentsorgung.</p>
+<p>Notfallmaßnahmen: Bei Stich‑ oder Schnittverletzungen sofortige lokale Blutung durch Druck, gründliches Ausspülen mit Wasser, Desinfektion, unverzügliche medizinische Beratung (Infektionsprofil, ggf. Postexpositionsprophylaxe), Meldung an die verantwortliche Person und Dokumentation.</p>
+<p>Schulung und Vorsorge: Unterweisungen finden bei Aufnahme der Tätigkeit und jährlich statt. Beschäftigte mit regelmäßigem Umgang mit Biostoffen sollten Angebote zur medizinischen Vorsorge (z. B. Hepatitis‑Impfung) erhalten.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Praxisübungen: Zeigen Sie den sicheren Umgang mit Lanzetten, Schnelltests, Abstrichen; üben Sie das sichere Entsorgen kontaminierter Materialien.</p>
+<p>Angepasste Unterweisungen: Schaffen Sie Sensibilität für das Infektionsrisiko durch Fallbeispiele und reale Ereignisse. Aktualisieren Sie Anweisungen bei neuen Infektionskrankheiten oder Verfahren (z. B. SARS‑CoV‑2‑Schnelltests).</p>
+<p>Kommunikation: Machen Sie Mitarbeitende darauf aufmerksam, dass sie bei Vorfällen sofort handeln und diese melden müssen. Schaffen Sie eine Fehlerkultur, in der das Melden von Pannen nicht sanktioniert wird.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Für welche Tätigkeiten in der Apotheke gilt die Biostoffverordnung[4]?</li>
+<li>Welche Schutzmaßnahmen müssen beim Umgang mit Blutproben eingehalten werden?</li>
+<li>Wie entsorgen Sie gebrauchte Kanülen und Teststreifen korrekt?</li>
+<li>Beschreiben Sie das Vorgehen bei einer Stich‑ oder Schnittverletzung durch kontaminiertes Material.</li>
+<li>Wie häufig müssen Beschäftigte im Umgang mit Biostoffen unterwiesen werden?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Benutzte Lanzetten gehören…",
+              options: ["in stichfeste Behälter.", "in Papiermüll.", "in Ausguss.", "in Hosentasche."],
+              correctIndex: 0
+            },
+            {
+              question: "Stich-/Schnittverletzung mit kontaminiertem Material:",
+              options: ["Reinigen/Desinfizieren, melden, medizinisch abklären.", "Ignorieren.", "Nur Pflaster.", "Morgen schauen."],
+              correctIndex: 0
+            },
+            {
+              question: "Unterweisung BioStoffe:",
+              options: ["Vor Tätigkeit und mindestens jährlich.", "Nur einmal.", "Nur im Notdienst.", "Nie."],
+              correctIndex: 0
+            },
+            {
+              question: "Bei Blutkontakt ist Mindest-PSA:",
+              options: ["Einmalhandschuhe.", "Keine.", "Nur Schal.", "Offene Wunde."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "medizinprodukte",
+          enabled: true,
+          optional: false,
+          title: "Modul 9: Medizinprodukte und Geräteeinweisung",
+          intro: "Sie wissen, welche Anforderungen die MPBetreibV an den Umgang mit Medizinprodukten stellt und wann eine Einweisung notwendig ist[15]. Sie können die Inhalte einer ordnungsgemäßen Geräteeinweisung beschreiben und…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie wissen, welche Anforderungen die MPBetreibV an den Umgang mit Medizinprodukten stellt und wann eine Einweisung notwendig ist<sup class='text-xs align-super text-slate-500'>[15]</sup>.</p>
+<p>Sie können die Inhalte einer ordnungsgemäßen Geräteeinweisung beschreiben und wissen, wer Geräte bedienen darf<sup class='text-xs align-super text-slate-500'>[16]</sup>.</p>
+<p>Sie kennen die Dokumentationspflichten und die Notwendigkeit von Nachschulungen bei Änderungen.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Medizinprodukte‑Betreiberverordnung (MPBetreibV) § 4: Medizinprodukte dürfen nur von Personen betrieben werden, die die erforderliche Ausbildung, Kenntnisse und Erfahrung besitzen<sup class='text-xs align-super text-slate-500'>[15]</sup>. Eine ordnungsgemäße Einweisung ist erforderlich; diese ist zu dokumentieren und bei wesentlichen Änderungen zu wiederholen<sup class='text-xs align-super text-slate-500'>[16]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Definition Medizinprodukt: Geräte und Software zur Diagnostik, Überwachung, Therapie oder Linderung von Krankheiten (z. B. Blutdruckmessgeräte, Blutzuckermessgeräte, Defibrillatoren, Lagerungssysteme). Erklärung der Risiko‑Klassen.</p>
+<p>Einweisungspflicht:</p>
+<p>Inhalt: Aufbau und Funktion, richtige Bedienung (Messung, Kalibrierung, Pflege), Sicherheitsaspekte (z. B. elektrische Sicherheit, Schutz vor Infektionen), Grenzen des Einsatzes, Fehlermeldungen und Fehlersuche.</p>
+<p>Zeitpunkt: Vor Erstinbetriebnahme, bei Wechsel des Personals und bei wesentlichen Änderungen (Software‑Update, neue Funktionen).</p>
+<p>Verantwortlichkeiten: Der Apothekenleiter benennt eine verantwortliche Person für jedes Gerät. Nur eingewiesene Personen dürfen ein Gerät bedienen<sup class='text-xs align-super text-slate-500'>[15]</sup>.</p>
+<p>Dokumentation: Einweisungsprotokoll mit Name des Geräts, Seriennummer, Datum der Einweisung, Namen der eingewiesenen Personen und des/der Einweisenden, Umfang der Schulung. Aufbewahrung im Gerätemanagement oder QM‑System.</p>
+<p>Wartung und Funktionsprüfungen: Regelmäßige Wartung entsprechend den Herstellerangaben; dokumentierte Funktionsprüfung vor jeder Benutzung oder in definierten Abständen; Kennzeichnung des aktuellen Zustands (geprüft/untersucht).</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Erfahrene Einweisende: Die Einweisung kann durch den Hersteller, autorisierte Servicetechniker oder qualifiziertes internes Personal erfolgen. Eine nachvollziehbare Unterweisung muss stattfinden; reine Übergabe eines Handbuchs genügt nicht.</p>
+<p>Praktische Demonstrationen: Nach der theoretischen Erklärung sollte der Umgang praktisch geübt werden (z. B. Blutdruck messen, Wartung des Geräts). Fragen der Mitarbeitenden sind ausdrücklich erwünscht.</p>
+<p>Umgang mit Updates: Bei Software‑Aktualisierungen, die Funktionen oder Bedienoberflächen verändern, ist eine neue Einweisung notwendig. Dokumentieren Sie das Update und die erneute Schulung.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Was regelt die MPBetreibV § 4 bezüglich der Einweisung in Medizinprodukte[15]?</li>
+<li>Welche Inhalte gehören zu einer ordnungsgemäßen Geräteeinweisung?</li>
+<li>Wer darf ein Medizinprodukt nach einer Einweisung bedienen[16]?</li>
+<li>Welche Daten müssen in einem Einweisungsprotokoll festgehalten werden?</li>
+<li>Wann ist eine neue Einweisung erforderlich?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Wer darf ein Medizinprodukt bedienen?",
+              options: ["Jede Person.", "Nur eingewiesene Personen.", "Nur Kund:innen.", "Nur Azubis."],
+              correctIndex: 1
+            },
+            {
+              question: "Wann ist eine erneute Einweisung nötig?",
+              options: ["Bei relevanten Änderungen/Updates oder neuem Personal.", "Nie.", "Nur an Feiertagen.", "Nur bei Inventur."],
+              correctIndex: 0
+            },
+            {
+              question: "Einweisung dokumentieren bedeutet:",
+              options: ["Gar nicht nötig.", "Protokoll mit Datum, Gerät, Person(en), Einweisende.", "Nur mündlich.", "Nur WhatsApp."],
+              correctIndex: 1
+            },
+            {
+              question: "Vor Nutzung eines Geräts:",
+              options: ["Funktionsfähigkeit prüfen.", "Nichts prüfen.", "Nur Akku anschauen.", "Nur Optik."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "lasten",
+          enabled: true,
+          optional: false,
+          title: "Modul 10: Manuelle Lastenhandhabung (Heben & Tragen)",
+          intro: "Sie verstehen die Anforderungen der LasthandhabungsVO (LasthandhabV) bezüglich der Unterweisung in der manuellen Lastenhandhabung[17]. Sie kennen gesundheitliche Risiken durch falsches Heben und Tragen und können…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie verstehen die Anforderungen der LasthandhabungsVO (LasthandhabV) bezüglich der Unterweisung in der manuellen Lastenhandhabung<sup class='text-xs align-super text-slate-500'>[17]</sup>.</p>
+<p>Sie kennen gesundheitliche Risiken durch falsches Heben und Tragen und können ergonomische Grundsätze anwenden.</p>
+<p>Sie wissen, welche Hilfsmittel zur Verfügung stehen und wie diese genutzt werden.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>LasthandhabungsVO § 4: Verweist auf die Unterweisungspflicht nach ArbSchG § 12; Beschäftigte sind genau über die richtige Handhabung von Lasten und die Gefährdungen bei unsachgemäßer Ausführung zu unterweisen<sup class='text-xs align-super text-slate-500'>[17]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Gesundheitsrisiken: Übermäßige Belastung des Muskel‑ und Skelettsystems, Bandscheibenvorfälle, Muskelzerrungen, Gelenkschäden, chronische Rückenschmerzen.</p>
+<p>Grundregeln des Hebens und Tragens:</p>
+<p>Lasten so nah wie möglich am Körper halten.</p>
+<p>Rücken gerade, Hohlkreuz vermeiden.</p>
+<p>Beim Heben aus den Knien bzw. aus den Beinen arbeiten, nicht aus dem Rücken.</p>
+<p>Lasten symmetrisch greifen, Verdrehungen vermeiden.</p>
+<p>Bei schweren oder unhandlichen Lasten zu zweit arbeiten.</p>
+<p>Hilfsmittel und ergonomische Arbeitsmittel: Rollwagen, Sackkarren, Handgabelhubwagen, Hubbühnen; richtiges Einstellen der Greif‑ und Tragflächen; Verwendung rutschfester Handschuhe.</p>
+<p>Organisation der Arbeit: Warenannahme in ergonomisch sinnvoller Höhe organisieren, Wege frei halten, Lasten auf mehrere kleine Transporte verteilen.</p>
+<p>Pausen und Kräftigung: Pausen einplanen, leichte Dehnübungen zur Entlastung des Rückens; Hinweise zu physiotherapeutischen Präventionsprogrammen.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Praxisnahe Übungen: Demonstrieren Sie das richtige Heben und Tragen mit Kartons aus dem Apothekenlager. Üben Sie gemeinsam den Einsatz von Wagen und Sackkarren.</p>
+<p>Integration in Arbeitsschutzunterweisung: Die Schulung sollte mindestens jährlich in Kombination mit der allgemeinen Arbeitsschutzunterweisung stattfinden.</p>
+<p>Beratung durch Fachkräfte: Bei Bedarf externe Fachkräfte für Ergonomie hinzuziehen (z. B. Betriebsarzt, Sicherheitsfachkraft).</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Welche gesundheitlichen Folgen kann falsches Heben und Tragen verursachen?</li>
+<li>Beschreiben Sie die Grundregeln beim Anheben einer schweren Kiste.</li>
+<li>Nennen Sie drei Hilfsmittel, die die Lastenhandhabung erleichtern.</li>
+<li>Warum ist es sinnvoll, Lasten zu zweit zu tragen?</li>
+<li>Wie oft sollten Schulungen zur Lastenhandhabung stattfinden?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Richtiges Heben:",
+              options: ["Aus den Beinen, Last nah am Körper.", "Rücken rund und ziehen.", "Ruckartig.", "Einarmig."],
+              correctIndex: 0
+            },
+            {
+              question: "Schwere Lasten:",
+              options: ["Allein tragen.", "Hilfsmittel nutzen oder zu zweit.", "Werfen.", "Springen."],
+              correctIndex: 1
+            },
+            {
+              question: "No-Go beim Tragen:",
+              options: ["Mit Last verdrehen.", "Wagen nutzen.", "Wege frei halten.", "Pausen machen."],
+              correctIndex: 0
+            },
+            {
+              question: "Ziel der Unterweisung Lastenhandhabung:",
+              options: ["Rückenbelastung reduzieren und Unfälle vermeiden.", "Zeit sparen.", "Mehr Umsatz.", "Nur Fitness."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "jugendliche",
+          enabled: ENABLED.jugendliche,
+          optional: true,
+          title: "Modul 11: Jugendliche im Apothekenbetrieb",
+          intro: "Sie kennen die besonderen Schutzvorschriften des Jugendarbeitsschutzgesetzes (JArbSchG), insbesondere die Anforderungen an Unterweisungen[18]. Sie können Tätigkeiten benennen, die Jugendliche nicht ausführen dürfen,…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie kennen die besonderen Schutzvorschriften des Jugendarbeitsschutzgesetzes (JArbSchG), insbesondere die Anforderungen an Unterweisungen<sup class='text-xs align-super text-slate-500'>[18]</sup>.</p>
+<p>Sie können Tätigkeiten benennen, die Jugendliche nicht ausführen dürfen, und wissen, wie deren Arbeitszeiten gestaltet sein müssen.</p>
+<p>Sie wissen, wie die Unterweisung jugendlicher Mitarbeitender dokumentiert wird und wer daran beteiligt werden sollte.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Jugendarbeitsschutzgesetz (JArbSchG) § 29: Arbeitgeber müssen Jugendliche vor Beginn der Beschäftigung und bei wesentlichen Änderungen der Arbeitsbedingungen über Unfall‑ und Gesundheitsgefahren unterweisen; die Unterweisungen müssen mindestens halbjährlich wiederholt werden<sup class='text-xs align-super text-slate-500'>[18]</sup>. Der Betriebsarzt und die Fachkraft für Arbeitssicherheit sollen beteiligt werden.</p>
+<p>Weitere §§ des JArbSchG regeln Arbeitszeiten, Pausen, Ruhezeiten und Arbeiten, die Jugendlichen untersagt sind.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Unfall‑ und Gesundheitsgefahren: Erläuterung typischer Gefahren in der Apotheke (z. B. Umgang mit Chemikalien, scharfe Gegenstände, rutschige Böden, schwere Lasten) und wie diese vermieden werden können.</p>
+<p>Zulässige und unzulässige Tätigkeiten: Jugendliche dürfen beispielsweise keine gefährlichen chemischen Stoffe handhaben, keine schweren Lasten heben, nicht mit Betäubungsmitteln arbeiten und keine Nachtarbeit leisten. Übersicht über genehmigte Aufgaben (z. B. Kundenservice, Warenlager auffüllen unter Aufsicht, einfache Reinigungsarbeiten).</p>
+<p>Arbeitszeiten: Jugendliche dürfen grundsätzlich nicht mehr als 8 Stunden täglich und 40 Stunden pro Woche arbeiten. Arbeitszeit darf zwischen 6 und 20 Uhr liegen. Pausenregelungen: Mindestens 30 Minuten bei mehr als 4,5 Stunden Arbeitszeit; 60 Minuten bei über 6 Stunden.</p>
+<p>Beteiligung von Fachkräften: Betriebsarzt und Fachkraft für Arbeitssicherheit sollen die Unterweisungen mitgestalten und bei gesundheitlichen Fragen konsultiert werden.</p>
+<p>Dokumentation: Datum, Inhalt, beteiligte Personen und Bestätigung der Teilnahme müssen im Ausbildungsnachweis dokumentiert werden. Bei Schulwechsel sind die Unterlagen an die neue Ausbildungsstätte zu übergeben.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Altersgerechte Kommunikation: Verwenden Sie leicht verständliche Sprache, bebilderte Materialien und praxisnahe Beispiele. Fördern Sie aktives Mitmachen, z. B. durch Gruppenarbeiten oder Rollenspiele.</p>
+<p>Eltern einbeziehen: Bei minderjährigen Jugendlichen sollte auch das Einverständnis der Eltern eingeholt und diese über die Schutzvorschriften informiert werden.</p>
+<p>Regelmäßige Kontrollen: Überprüfen Sie die Einhaltung der Arbeitszeiten und Pausen; dokumentieren Sie Verstöße und ergreifen Sie Gegenmaßnahmen.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Wie oft müssen Jugendliche gemäß JArbSchG unterwiesen werden[18]?</li>
+<li>Welche Arbeitszeiten gelten für Jugendliche in Apotheken?</li>
+<li>Nennen Sie zwei Tätigkeiten, die Jugendliche nicht ausführen dürfen.</li>
+<li>Wer soll an der Unterweisung von Jugendlichen beteiligt werden?</li>
+<li>Wie dokumentieren Sie die Unterweisung eines jugendlichen Mitarbeitenden?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Wann gilt Jugendarbeitsschutz hier besonders?",
+              options: ["Wenn U18 beschäftigt sind.", "Wenn alle über 30 sind.", "Nur im Notdienst.", "Nie."],
+              correctIndex: 0
+            },
+            {
+              question: "Unterweisung Jugendliche:",
+              options: ["Vor Beginn und mindestens halbjährlich.", "Nur einmal.", "Nur bei Prüfung.", "Nie."],
+              correctIndex: 0
+            },
+            {
+              question: "Welche Aussage ist korrekt?",
+              options: ["Gefährliche Tätigkeiten ohne Aufsicht sind ok.", "Tätigkeiten müssen altersgerecht sein und Risiken vermeiden.", "Arbeitszeiten egal.", "Keine Pausen nötig."],
+              correctIndex: 1
+            },
+            {
+              question: "Dokumentation:",
+              options: ["Unterweisung und Inhalte dokumentieren.", "Nicht dokumentieren.", "Nur privat.", "Nur mündlich."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "mutterschutz",
+          enabled: true,
+          optional: false,
+          title: "Modul 12: Mutterschutz",
+          intro: "Sie kennen die Pflichten des Arbeitgebers hinsichtlich des Mutterschutzes, insbesondere im Hinblick auf die Gefährdungsbeurteilung und die Information der Mitarbeitenden[19]. Sie wissen, welche Schutzmaßnahmen…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie kennen die Pflichten des Arbeitgebers hinsichtlich des Mutterschutzes, insbesondere im Hinblick auf die Gefährdungsbeurteilung und die Information der Mitarbeitenden<sup class='text-xs align-super text-slate-500'>[19]</sup>.</p>
+<p>Sie wissen, welche Schutzmaßnahmen Schwangere und Stillende betreffen und welche Tätigkeiten sie nicht ausführen dürfen<sup class='text-xs align-super text-slate-500'>[20]</sup>.</p>
+<p>Sie können die Inhalte und die Dokumentation der Unterweisung zum Mutterschutz erläutern.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Mutterschutzgesetz (MuSchG) § 10: Arbeitgeber müssen für jeden Arbeitsplatz eine Gefährdungsbeurteilung erstellen und Schutzmaßnahmen festlegen<sup class='text-xs align-super text-slate-500'>[19]</sup>.</p>
+<p>MuSchG § 14: Die Ergebnisse der Gefährdungsbeurteilung und die Schutzmaßnahmen müssen dokumentiert und allen Beschäftigten bekannt gemacht werden<sup class='text-xs align-super text-slate-500'>[20]</sup>. Schwangere oder stillende Frauen sind individuell zu unterweisen.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Gefährdungsbeurteilung: Analyse der Arbeitsplätze, um physische (z. B. schwere Lasten), chemische (z. B. Zytostatika, Lösungsmittel), biologische (z. B. Infektionserreger) und organisatorische (z. B. Schichtdienst) Risiken für Schwangere zu identifizieren. Festlegung von Schutzmaßnahmen (z. B. Anpassung der Arbeitszeiten, Einsatz alternativer Aufgaben, Verbot bestimmter Tätigkeiten).</p>
+<p>Schutzmaßnahmen: Bereitstellung geeigneter Schutzausrüstung, Umgestaltung des Arbeitsplatzes, Beschäftigungsverbote (z. B. Umgang mit bestimmten Chemikalien, Arbeiten mit erhöhter Unfallgefahr), Mutterschutzfristen (Schutzfristen vor und nach der Geburt, Möglichkeit des vorzeitigen Mutterschutzes).</p>
+<p>Information der Belegschaft: Alle Mitarbeitenden müssen wissen, welche Schutzmaßnahmen gelten, um unterstützend zu handeln. Schwangere oder stillende Frauen werden über ihre Rechte und Pflichten unterrichtet (z. B. Anspruch auf Stillzeit, Mitteilungspflicht der Schwangerschaft).</p>
+<p>Dokumentation: Gefährdungsbeurteilung schriftlich festhalten; Datum und Inhalt der Unterweisung, Teilnehmer*innen und Schutzmaßnahmen dokumentieren. Änderungen bei erneuter Beurteilung müssen nachgeführt werden.</p>
+<p>Vertraulichkeit und Datenschutz: Informationen über eine Schwangerschaft sind vertraulich zu behandeln. Nur notwendige Personen (Apothekenleitung, ggf. Personalleitung) dürfen informiert werden. Aushänge enthalten allgemeine Informationen; persönliche Daten werden geschützt.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Proaktive Kommunikation: Ermutigen Sie Mitarbeiterinnen, eine Schwangerschaft frühzeitig mitzuteilen, damit rechtzeitig Schutzmaßnahmen ergriffen werden können.</p>
+<p>Einbindung von Fachkräften: Ziehen Sie die Betriebsärztin/den Betriebsarzt oder die Sicherheitsfachkraft hinzu, um die Gefährdungsbeurteilung zu bewerten.</p>
+<p>Individuelle Maßnahmen: Passen Sie Arbeitszeiten, Aufgaben und Arbeitsumfeld der betroffenen Person an. Dokumentieren Sie alle Änderungen und informieren Sie das Team über die allgemeinen Schutzmaßnahmen.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Welche Pflichten hat der Arbeitgeber gemäß MuSchG § 10[19]?</li>
+<li>Was muss laut MuSchG § 14 mitgeteilt und dokumentiert werden[20]?</li>
+<li>Nennen Sie Beispiele für Tätigkeiten, die Schwangeren nicht gestattet sind.</li>
+<li>Welche Informationen müssen vertraulich behandelt werden, und wer ist in der Apotheke über die Schwangerschaft zu informieren?</li>
+<li>Wie oft sollten Gefährdungsbeurteilungen im Mutterschutz überprüft werden?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Was ist zentral im Mutterschutz?",
+              options: ["Gefährdungsbeurteilung und geeignete Schutzmaßnahmen.", "Ignorieren.", "Kündigung.", "Mehr Überstunden."],
+              correctIndex: 0
+            },
+            {
+              question: "Beispiel für relevante Gefährdung:",
+              options: ["Gefahrstoffe/biologische Risiken/schwere Lasten.", "Pause.", "Telefon.", "PC."],
+              correctIndex: 0
+            },
+            {
+              question: "Maßnahmen können sein:",
+              options: ["Arbeitsplatz anpassen/Tätigkeit ändern.", "Keine.", "Nur Urlaub.", "Nur Notdienst."],
+              correctIndex: 0
+            },
+            {
+              question: "Dokumentation:",
+              options: ["Beurteilung und Maßnahmen dokumentieren.", "Verboten.", "Optional.", "Nur mündlich."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "agg",
+          enabled: true,
+          optional: false,
+          title: "Modul 13: Anti‑Diskriminierung und Gleichbehandlung (AGG)",
+          intro: "Sie verstehen die Ziele des Allgemeinen Gleichbehandlungsgesetzes (AGG) und seine Bedeutung für den Apothekenbetrieb. Sie kennen die Pflichten des Arbeitgebers, um Diskriminierung zu verhindern und eine…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie verstehen die Ziele des Allgemeinen Gleichbehandlungsgesetzes (AGG) und seine Bedeutung für den Apothekenbetrieb.</p>
+<p>Sie kennen die Pflichten des Arbeitgebers, um Diskriminierung zu verhindern und eine Beschwerdestelle einzurichten<sup class='text-xs align-super text-slate-500'>[21]</sup>.</p>
+<p>Sie sind sensibilisiert für Verhaltensweisen, die diskriminierend sein können, und wissen, wie Sie damit umgehen.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Allgemeines Gleichbehandlungsgesetz (AGG) § 12: Arbeitgeber sind verpflichtet, die erforderlichen Maßnahmen zum Schutz vor Benachteiligungen aufgrund ethnischer Herkunft, Geschlecht, Religion oder Weltanschauung, Behinderung, Alter oder sexueller Identität zu treffen. Sie müssen die Beschäftigten über die Unzulässigkeit von Benachteiligungen informieren, zum Beispiel in Betriebsversammlungen oder Schulungen, und die Möglichkeit zur Beschwerde bekannt machen<sup class='text-xs align-super text-slate-500'>[21]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Grundprinzipien des AGG: Erklärung des Diskriminierungsverbots und der geschützten Merkmale (Rasse, ethnische Herkunft, Geschlecht, Religion, Weltanschauung, Behinderung, Alter, sexuelle Identität). Beispiele für direkte und indirekte Diskriminierung sowie Belästigung und sexuelle Belästigung.</p>
+<p>Pflichten des Arbeitgebers: Einrichtung einer Beschwerdestelle, Information der Mitarbeitenden über das AGG und die Beschwerdemöglichkeiten, Schutzmaßnahmen bei gemeldeten Verstößen, Verbot von Benachteiligung bei Einstellung, Beförderung, Arbeitsbedingungen und Beendigung des Arbeitsverhältnisses.</p>
+<p>Verhalten am Arbeitsplatz: Sensibilisierung für unbewusste Vorurteile, respektvoller Umgang mit Kunden und Kollegen, Verwendung diskriminierungsfreier Sprache, Gleichbehandlung in Beratung und Abgabe von Arzneimitteln.</p>
+<p>Beschwerdeverfahren: Ablauf bei Diskriminierungsvorwürfen, Dokumentation, Zuständigkeiten der Beschwerdestelle, Schutz vor Benachteiligung von Beschwerdeführenden.</p>
+<p>Maßnahmen bei Verstößen: Aufklärende Gespräche, Unterweisung, arbeitsrechtliche Konsequenzen; Förderung einer offenen Unternehmenskultur, in der Diversität wertgeschätzt wird.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Regelmäßige Schulungen: Neben der Pflichtinformation sollten regelmäßig Workshops oder Seminare stattfinden, in denen Rollenspiele und Fallbeispiele zu Diskriminierungssituationen analysiert werden.</p>
+<p>Leitlinien und Verhaltenskodex: Erarbeiten Sie interne Richtlinien, die diskriminierendes Verhalten klar definieren und Konsequenzen benennen. Stellen Sie den Gesetzestext des AGG in geeigneter Form zur Verfügung (Aushang, Intranet).</p>
+<p>Vertrauensvolle Beschwerdestelle: Bestimmen Sie eine neutrale Person oder ein Team, das Beschwerden entgegennimmt und vertraulich bearbeitet. Kommunizieren Sie die Kontaktdaten transparent.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Welche Merkmale schützt das AGG vor Diskriminierung?</li>
+<li>Welche Pflichten hat der Arbeitgeber nach AGG § 12[21]?</li>
+<li>Wie sollten Mitarbeitende reagieren, wenn sie Diskriminierung beobachten oder erfahren?</li>
+<li>Warum ist es wichtig, unbewusste Vorurteile zu reflektieren?</li>
+<li>Wie kann in Ihrer Apotheke eine diskriminierungsfreie Arbeitsumgebung gefördert werden?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "AGG schützt vor Benachteiligung u.a. wegen…",
+              options: ["Ethnischer Herkunft, Geschlecht, Alter, Religion etc.", "Schuhgröße.", "Lieblingsfilm.", "Hobby."],
+              correctIndex: 0
+            },
+            {
+              question: "Belästigung ist…",
+              options: ["Unerwünschtes Verhalten, das die Würde verletzt.", "Immer ok.", "Nur privat.", "Nur Humor."],
+              correctIndex: 0
+            },
+            {
+              question: "Was tun bei Diskriminierungsvorfall?",
+              options: ["Melden über internen Prozess/Beschwerdestelle.", "Schweigen.", "Online posten.", "Kunden fragen."],
+              correctIndex: 0
+            },
+            {
+              question: "Ziel der Maßnahmen:",
+              options: ["Faires, respektvolles Arbeitsumfeld.", "Mehr Konflikte.", "Keine Regeln.", "Angst."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "datenschutz",
+          enabled: true,
+          optional: false,
+          title: "Modul 14: Datenschutz (DSGVO und BDSG)",
+          intro: "Sie verstehen die Grundprinzipien der DSGVO und wissen, welche Daten im Apothekenalltag verarbeitet werden. Sie wissen, welche Aufgaben ein Datenschutzbeauftragter hat und wie Mitarbeitende geschult werden müssen[22].",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie verstehen die Grundprinzipien der DSGVO und wissen, welche Daten im Apothekenalltag verarbeitet werden.</p>
+<p>Sie wissen, welche Aufgaben ein Datenschutzbeauftragter hat und wie Mitarbeitende geschult werden müssen<sup class='text-xs align-super text-slate-500'>[22]</sup>.</p>
+<p>Sie können die Rechte der Betroffenen respektieren und wissen, wie Datenschutzverletzungen gemeldet werden.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Datenschutz‑Grundverordnung (DSGVO): Art. 5 legt die Grundsätze der Verarbeitung fest (z. B. Rechtmäßigkeit, Zweckbindung, Datenminimierung, Transparenz). Art. 32 fordert geeignete technische und organisatorische Maßnahmen zur Sicherung der Verarbeitung. Art. 39 verpflichtet den Datenschutzbeauftragten, die an den Verarbeitungsvorgängen beteiligten Mitarbeitenden zu sensibilisieren und zu schulen<sup class='text-xs align-super text-slate-500'>[22]</sup>.</p>
+<p>Bundesdatenschutzgesetz (BDSG): Ergänzt die DSGVO und enthält nationale Regelungen, unter anderem zu ärztlicher Schweigepflicht und Berufsgeheimnissen.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Datenarten in der Apotheke: Kundendaten (Name, Adresse, Geburtsdatum), Gesundheitsdaten (Rezepte, Medikationspläne, Diagnosen), Zahlungsdaten. Gesundheitsdaten sind besonders schützenswert.</p>
+<p>Grundsätze der Verarbeitung:</p>
+<p>Rechtmäßigkeit: Verarbeitung nur mit gesetzlicher Grundlage (z. B. Arzneimittelabgabe, Dokumentationspflichten) oder Einwilligung.</p>
+<p>Zweckbindung: Daten dürfen nur für den Zweck verwendet werden, für den sie erhoben wurden.</p>
+<p>Datenminimierung: Nur notwendige Daten erfassen und speichern.</p>
+<p>Richtigkeit: Daten müssen aktuell sein; Fehler sind zu berichtigen.</p>
+<p>Speicherbegrenzung: Daten sind zu löschen, wenn sie nicht mehr benötigt werden (gesetzliche Aufbewahrungsfristen beachten).</p>
+<p>Integrität und Vertraulichkeit: Schutz vor unbefugtem Zugriff (z. B. durch Passwörter, Zutrittskontrollen).</p>
+<p>Rechte der Betroffenen: Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit, Widerspruch. Apotheken müssen Anfragen fristgerecht bearbeiten und dokumentieren.</p>
+<p>Datenschutzorganisation: Aufgaben des Datenschutzbeauftragten; Meldung von Datenschutzverletzungen (72‑Stunden‑Frist), Sensibilisierung des Personals<sup class='text-xs align-super text-slate-500'>[22]</sup>.</p>
+<p>Technische und organisatorische Maßnahmen (TOM): Passwortschutz, Verschlüsselung, eingeschränkte Zugriffsrechte, sichere Übertragung (z. B. E‑Rezept), regelmäßige Backups, Clean‑Desk‑Policy.</p>
+<p>Umgang mit Rezepten und Kundendaten: Rezeptdaten nur für Abgabe und Abrechnung verwenden; keine Einsicht durch unbefugte Dritte; Unterlagen sicher aufbewahren und fristgerecht vernichten; Hinweise zu elektronischen Rezepten.</p>
+<p>Meldepflicht bei Datenschutzverletzungen: Bei Verdacht auf unberechtigten Zugriff, Verlust oder Fehlversendung von Daten muss unverzüglich der Datenschutzbeauftragte oder die zuständige Aufsichtsbehörde informiert werden. Dokumentation aller Vorfälle.</p>
+<p>Durchführung and Best Practices</p>
+<p>Schulungsfrequenz: Bei Einstellung und in regelmäßigen Abständen (mindestens jährlich). Aktualisierung bei Änderung der Rechtslage, Einführung neuer IT‑Systeme oder Datensicherheitsmaßnahmen.</p>
+<p>Sensibilisierung: Nutzen Sie Fallbeispiele (z. B. Einsichtnahme in fremde Rezepte, unsichere Passwörter) und praktische Übungen (z. B. Anonymisierung von Patientenbefunden). Prüfen Sie, ob Mitarbeitende das Prinzip der Datenminimierung verstehen.</p>
+<p>Datenschutzleitlinie: Erstellen Sie eine interne Richtlinie, die Verhaltensregeln und Meldewege festlegt. Machen Sie diese im Teammeeting bekannt.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Nennen Sie die sechs Grundprinzipien der DSGVO (Art. 5) und erklären Sie sie kurz.</li>
+<li>Welche Aufgabe hat der Datenschutzbeauftragte in Bezug auf Schulungen[22]?</li>
+<li>Wie sollten elektronische Patientenakten und Rezeptdaten gespeichert werden, um die Vertraulichkeit zu gewährleisten?</li>
+<li>Welche Rechte haben betroffene Personen hinsichtlich ihrer Daten?</li>
+<li>Was ist bei einer Datenschutzverletzung zu tun, und wer ist zu informieren?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Gesundheitsdaten sind…",
+              options: ["besonders schützenswert.", "öffentlich.", "unwichtig.", "nur privat."],
+              correctIndex: 0
+            },
+            {
+              question: "Richtige Passwortpraxis:",
+              options: ["Starkes Passwort + nicht teilen + Bildschirm sperren.", "Post-it am Bildschirm.", "Mit Kolleg:innen teilen.", "1234."],
+              correctIndex: 0
+            },
+            {
+              question: "Datenschutzverletzung vermutet:",
+              options: ["Sofort intern melden.", "Ignorieren.", "Warten.", "Nur Kunde informieren."],
+              correctIndex: 0
+            },
+            {
+              question: "Diskretion am HV bedeutet:",
+              options: ["Keine laute Nennung sensibler Daten.", "Alles vorlesen.", "Daten offen liegen lassen.", "Keine Beratung."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "ki",
+          enabled: ENABLED.ki,
+          optional: true,
+          title: "Modul 15: KI‑Kompetenzen (AI Act)",
+          intro: "Sie verstehen den Hintergrund und die Anforderungen der EU‑Verordnung über Künstliche Intelligenz (KI‑VO) und den Zusammenhang mit apothekerischer Praxis[23]. Sie können Chancen und Risiken beim Einsatz von…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie verstehen den Hintergrund und die Anforderungen der EU‑Verordnung über Künstliche Intelligenz (KI‑VO) und den Zusammenhang mit apothekerischer Praxis<sup class='text-xs align-super text-slate-500'>[23]</sup>.</p>
+<p>Sie können Chancen und Risiken beim Einsatz von KI‑Systemen in der Apotheke benennen und wissen, welche Kompetenzen das Personal benötigt.</p>
+<p>Sie kennen die Anforderungen an Schulungsmaßnahmen und deren Dokumentation<sup class='text-xs align-super text-slate-500'>[24]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>EU‑Verordnung über Künstliche Intelligenz (KI‑VO) Art. 4: Seit dem 2. Februar 2025 sind Anbieter und Betreiber von KI‑Systemen verpflichtet, dafür zu sorgen, dass Personal und „andere in ihren Auftrag einbezogene Personen“ über ausreichende KI‑Kompetenz verfügen. Die Maßnahmen müssen dokumentiert werden<sup class='text-xs align-super text-slate-500'>[23]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Definition und Beispiele für KI: KI‑Systeme sind Technologien, die menschliche Entscheidungsprozesse nachbilden können (Maschinenlernen, Sprachverarbeitung, Entscheidungsunterstützung). In Apotheken können KI‑Systeme beispielsweise Beratungschatbots, Arzneimittelinteraktions‑Checker, Absatzprognosen oder automatische Bestellsysteme sein.</p>
+<p>Chancen: Effizienzsteigerung durch automatisierte Prozesse, 24/7‑Kundenservice via Chatbot, schnellere Analyse großer Datenmengen, Unterstützung bei der Arzneimitteltherapiesicherheit.</p>
+<p>Risiken und ethische Aspekte:</p>
+<p>Bias und Diskriminierung: KI‑Algorithmen können unfaire Entscheidungen treffen, wenn sie mit einseitigen Datensätzen trainiert wurden.</p>
+<p>Datenschutz und IT‑Sicherheit: KI‑Systeme verarbeiten große Mengen an Daten; unzureichend geschützte Systeme können Datenlecks verursachen.</p>
+<p>Transparenz und Verantwortung: Entscheidungen von KI‑Systemen müssen nachvollziehbar sein; die Letztverantwortung für medizinische Beratung liegt bei Menschen.</p>
+<p>Kompetenzanforderungen:</p>
+<p>Grundverständnis der Funktionsweise von KI und maschinellem Lernen (kein Expertenwissen nötig, aber Kenntnisse über Datenquellen, Lernprinzipien und Output).</p>
+<p>Fähigkeit zur kritischen Bewertung der Ergebnisse (Ergebnis plausibel? Abgleich mit pharmazeutischem Wissen?).</p>
+<p>Kenntnisse über rechtliche Rahmenbedingungen (KI‑VO, DSGVO) und Haftungsfragen.</p>
+<p>Schulungsmaßnahmen:</p>
+<p>Theoretische Schulung: Vermittlung von Grundlagen, Risiken und rechtlichen Anforderungen.</p>
+<p>Praktisches Training: Einführung in das konkrete KI‑System (z. B. Chatbot‑Anwendung), Demonstration von Anwendungsfällen, Szenarientraining.</p>
+<p>Dokumentation: Umfang und Inhalt der Schulungen, Namen der geschulten Personen und des Trainers; regelmäßige Aktualisierung bei Einführung neuer KI‑Systeme oder geänderten rechtlichen Vorgaben<sup class='text-xs align-super text-slate-500'>[24]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Bedarfsermittlung: Prüfen Sie, welche KI‑Systeme im Einsatz sind oder geplant werden. Erstellen Sie eine Kompetenzmatrix, um Schulungsbedarf festzustellen.</p>
+<p>Interdisziplinäre Schulung: Beziehen Sie IT‑Spezialisten, Datenschutzbeauftragte und Fachpersonal ein. Vermitteln Sie nicht nur die Technik, sondern auch die ethischen und rechtlichen Aspekte.</p>
+<p>Kontinuierliches Lernen: KI‑Technologien entwickeln sich rasch; planen Sie regelmäßige Updates und Feedbackschleifen ein.</p>
+<p>Transparenz: Kommunizieren Sie gegenüber Kunden, wenn KI im Einsatz ist (z. B. Kennzeichnung von Chatbots), und erklären Sie die Kontrolle durch fachkundige Mitarbeitende.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Welche Pflichten ergeben sich aus Art. 4 der KI‑Verordnung für Apotheken[23]?</li>
+<li>Nennen Sie zwei Chancen und zwei Risiken beim Einsatz von KI in der Apotheke.</li>
+<li>Welche Kompetenzen müssen Mitarbeitende im Umgang mit KI‑Systemen besitzen?</li>
+<li>Wie dokumentieren Sie eine KI‑Schulung, und warum ist diese Dokumentation wichtig[24]?</li>
+<li>Wie stellen Sie sicher, dass die Ergebnisse eines KI‑Systems plausibel sind?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "KI-Ausgabe in Beratung:",
+              options: ["Kritisch prüfen und fachlich validieren.", "Immer korrekt übernehmen.", "Ungeprüft weitergeben.", "Nur kopieren."],
+              correctIndex: 0
+            },
+            {
+              question: "Patientendaten in offene KI-Tools:",
+              options: ["Nicht eingeben.", "Immer eingeben.", "Per WhatsApp senden.", "Egal."],
+              correctIndex: 0
+            },
+            {
+              question: "Human-in-the-loop bedeutet:",
+              options: ["Mensch behält Verantwortung/Kontrolle.", "KI entscheidet allein.", "Niemand haftet.", "Nur IT."],
+              correctIndex: 0
+            },
+            {
+              question: "Warum KI-Schulung?",
+              options: ["Risiken minimieren und verantwortungsvollen Einsatz sicherstellen.", "Marketing.", "Spaß.", "Urlaub."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "impfen",
+          enabled: ENABLED.impfen,
+          optional: true,
+          title: "Modul 16: Grippeschutz‑ und SARS‑CoV‑2‑Impfungen",
+          intro: "Sie kennen die gesetzlichen Voraussetzungen, unter denen Apotheker:innen Impfungen durchführen dürfen, und wissen, wer zur Impfleistung berechtigt ist[25]. Sie wissen, welche Inhalte eine ärztliche Impf‑Schulung…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie kennen die gesetzlichen Voraussetzungen, unter denen Apotheker:innen Impfungen durchführen dürfen, und wissen, wer zur Impfleistung berechtigt ist<sup class='text-xs align-super text-slate-500'>[25]</sup>.</p>
+<p>Sie wissen, welche Inhalte eine ärztliche Impf‑Schulung umfasst und wie diese dokumentiert wird<sup class='text-xs align-super text-slate-500'>[26]</sup>.</p>
+<p>Sie sind in der Lage, den Ablauf einer Impfung – von der Anamnese bis zur Nachbeobachtung – korrekt durchzuführen und Notfälle zu managen.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Infektionsschutzgesetz (IfSG) § 20c: Apotheker:innen dürfen im Rahmen von Modellprojekten und ab 2022 bundesweit Grippeschutz‑ und SARS‑CoV‑2‑Impfungen vornehmen, sofern sie eine ärztliche Schulung absolviert haben und eine entsprechende Fortbildung nachweisen können<sup class='text-xs align-super text-slate-500'>[25]</sup>. Die Schulung muss Module zur Anamnese, Aufklärung, Impftechnik, Erkennen von Kontraindikationen und Notfallmanagement beinhalten<sup class='text-xs align-super text-slate-500'>[26]</sup>.</p>
+<p>Die Abgabe von Impfungen ist auf pharmazeutisches Personal (Apotheker:innen) beschränkt; PKA oder Boten dürfen nicht impfen.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Ärztliche Fortbildung: Die Schulung wird in der Regel von Ärztekammern oder Universitäten angeboten. Sie besteht aus mehreren Modulen:</p>
+<p>Immunologie und Impfstoffe: Aufbau und Funktion des Immunsystems, Wirkprinzipien von Impfstoffen, Unterschiede zwischen Tot‑ und mRNA‑Impfstoffen.</p>
+<p>Anamnese und Kontraindikationen: Erhebung der Krankengeschichte (Allergien, Vorerkrankungen, Schwangerschaft), Überprüfung des Impfstatus, Ausschluss von Kontraindikationen (z. B. akute Infektionen, Immunstörungen).</p>
+<p>Aufklärung und Einwilligung: Umfassende Information über Nutzen und Risiken der Impfung, mögliche Nebenwirkungen, Einholung der Einwilligung, Dokumentation.</p>
+<p>Impftechnik: Hygienische Vorbereitung (Hände desinfizieren, sterile Spritzen), Auswahl der richtigen Injektionsstelle (Deltoidmuskel), korrekte Technik (Injektion im 90°‑Winkel), Aspiration nach Leitlinien.</p>
+<p>Notfallmanagement: Erkennen und Behandeln von anaphylaktischen Reaktionen, synkopalen Ereignissen, Umgang mit allergischen Reaktionen, Bereitstellung von Notfallsets (Adrenalin, Antihistaminika) und Alarmierung des Rettungsdienstes.</p>
+<p>Praktische Umsetzung in der Apotheke: Organisation der Impftage (Terminvergabe, separate Impfbereiche), Lagerung und Zubereitung der Impfstoffe, Einhaltung der Kühlkette, Hygienemaßnahmen, Aufbewahrung von Notfallmedikamenten.</p>
+<p>Dokumentation und Meldung: Eintragung der Impfung in den Impfpass und das elektronische Meldesystem (z. B. digitaler Impfausweis), Dokumentation im Apotheken‑QM; Meldung von Nebenwirkungen an das Paul‑Ehrlich‑Institut.</p>
+<p>Kommunikation mit Patienten: Beantwortung von Fragen, Umgang mit Ängsten, Beratung zu weiteren Impfungen. Hinweis auf Nachbeobachtung (15 Minuten) und Verhalten nach der Impfung (Vermeidung schwerer körperlicher Anstrengung).</p>
+<p>Auffrischung: Fortbildungsmaßnahmen bei Änderungen der Impfempfehlungen (z. B. durch STIKO), neuen Impfstoffen oder geänderten Leitlinien.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Fester Impfbereich: Richten Sie einen ruhigen, hygienischen Raum mit genügend Platz für den Patienten und die Nachbeobachtung ein. Halten Sie Desinfektionsmittel, Spritzen, Verbandmaterial und Notfallsets bereit.</p>
+<p>Checkliste: Entwickeln Sie einen Ablaufplan (Anamnese → Aufklärung → Einwilligung → Impfung → Nachbeobachtung). Nutzen Sie eine Checkliste, um keine Schritte zu vergessen.</p>
+<p>Teamkommunikation: Stellen Sie sicher, dass alle Beteiligten (Apotheker:in, weitere Mitarbeitende) den Ablauf kennen. Delegieren Sie Aufgaben (z. B. Dokumentation, Terminvergabe). Sorgen Sie für Datenschutz im Impfbereich.</p>
+<p>Dokumentation: Notieren Sie Chargennummer, Verfallsdatum, Impfzeitpunkt und eventuelle Besonderheiten. Legen Sie einen Notfallbericht an, falls Komplikationen auftreten.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Welche Voraussetzungen müssen Apotheker:innen erfüllen, um Impfungen durchführen zu dürfen[25]?</li>
+<li>Welche Inhalte umfasst die ärztliche Impf‑Schulung[26]?</li>
+<li>Wie sollte der Ablauf einer Impfung in der Apotheke organisiert werden?</li>
+<li>Welche Unterlagen müssen im Anschluss an die Impfung ausgefüllt werden?</li>
+<li>Warum ist eine Nachbeobachtungszeit von 15 Minuten wichtig?</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Voraussetzung zum Impfen in Apotheken:",
+              options: ["Apotheker:in mit entsprechender Qualifikation/Schulung.", "PKA darf.", "Kunde entscheidet.", "Botendienst."],
+              correctIndex: 0
+            },
+            {
+              question: "Vor Impfung ist erforderlich:",
+              options: ["Anamnese + Aufklärung + Einwilligung.", "Keine Prüfung.", "Nur Preis.", "Nur Termin."],
+              correctIndex: 0
+            },
+            {
+              question: "Nach Impfung:",
+              options: ["Kurze Nachbeobachtung und Hinweise.", "Sofort Sport.", "Alkohol empfehlen.", "Keine Doku."],
+              correctIndex: 0
+            },
+            {
+              question: "Dokumentation umfasst u.a.:",
+              options: ["Impfstoff/Charge/Datum/Einwilligung.", "Nichts.", "Nur Name.", "Nur Uhrzeit."],
+              correctIndex: 0
+            }
+          ]
+        },
+        {
+          id: "substitution",
+          enabled: ENABLED.substitution,
+          optional: true,
+          title: "Modul 17: Opioidsubstitution",
+          intro: "Sie kennen die gesetzlichen Grundlagen der Substitutionstherapie und verstehen, warum diese Therapieform besondere Anforderungen an Apotheken stellt[27]. Sie wissen, welche Aufgaben Apotheker:innen und das…",
+          content: `
+<h3 class='text-lg font-semibold mt-4'>Lernziele</h3>
+<p>Sie kennen die gesetzlichen Grundlagen der Substitutionstherapie und verstehen, warum diese Therapieform besondere Anforderungen an Apotheken stellt<sup class='text-xs align-super text-slate-500'>[27]</sup>.</p>
+<p>Sie wissen, welche Aufgaben Apotheker:innen und das Hilfspersonal haben und wie die Dokumentation erfolgen muss<sup class='text-xs align-super text-slate-500'>[28]</sup>.</p>
+<p>Sie können die Besonderheiten bei der Abgabe von Substitutionsmitteln und die Anforderungen an den Datenschutz und die Diskretion erklären.</p>
+<h3 class='text-lg font-semibold mt-4'>Gesetzliche Grundlagen</h3>
+<p>Betäubungsmittelgesetz (BtMG) und Betäubungsmittel-Verschreibungsverordnung (BtMVV): Regeln die Verschreibung, Herstellung, Lagerung und Abgabe von Substitutionsmitteln (z. B. Methadon, Buprenorphin). Verlangen strenge Dokumentations- und Sicherheitsmaßnahmen.</p>
+<p>ApBetrO und BAK-Leitlinie: Die Leitlinie der Bundesapothekerkammer zur Qualitätssicherung in der Substitutionstherapie stellt klar, dass die Herstellung und Abgabe von Substitutionsmitteln pharmazeutische Tätigkeiten sind und ausschließlich durch pharmazeutisches Personal durchgeführt werden dürfen<sup class='text-xs align-super text-slate-500'>[27]</sup>. Hilfspersonal darf nur unter Aufsicht unterstützen<sup class='text-xs align-super text-slate-500'>[28]</sup>.</p>
+<h3 class='text-lg font-semibold mt-4'>Inhalte der Schulung</h3>
+<p>Rechtliche Grundlagen: Überblick über BtMG/BtMVV (Verordnungsvorgaben, Höchstmengen, Dokumentationspflichten), Anforderungen der ApBetrO, Verschwiegenheitspflichten. Erläuterung der Strukturen regionaler Substitutionsprogramme.</p>
+<p>Herstellung und Abgabe:</p>
+<p>Herstellung: Herstellung in der Apotheke (z. B. Herstellen von Methadonsirup) nach ärztlicher Verordnung; Einhaltung von Reinheitsanforderungen; Abfüllung in geeignete Behälter; Kennzeichnung.</p>
+<p>Abgabe: Sichtvergabe (Verabreichung in Anwesenheit des Apothekers/der Apothekerin), Take‑Home‑Verordnungen (Abgabe für mehrere Tage), Abstimmungen mit dem substituierenden Arzt, Kontrolle der Identität des Patienten (Ausweis, Foto).</p>
+<p>Transport und Lagerung: Sicherung gegen Diebstahl (verschlossener BtM‑Schrank), Temperaturführung, Protokollierung der Bewegungen im BtM‑Buch.</p>
+<p>Dokumentation:</p>
+<p>BtM‑Dokumentation: Eintrag im Betäubungsmittel-Bestandsbuch oder -programm (Ein‑ und Ausgangsmengen, Verfallsdaten, Chargen). Kennzeichnung der Rezepte, Aufbewahrungspflicht (3 Jahre). Nachweis der ordnungsgemäßen Vernichtung abgelaufener oder zurückgebrachter BtM.</p>
+<p>Patientenspezifische Dokumentation: Datum und Uhrzeit der Abgabe, Dosis, Name des Patienten, Name des abgebenden Personals, Unterschrift des Patienten.</p>
+<p>Umgang mit den Patienten:</p>
+<p>Diskretion und Datenschutz: Schutz der Privatsphäre, vertrauliche Gesprächsführung, diskrete Ausgabe (bspw. separater Beratungsraum), ungestörter Wartebereich.</p>
+<p>Beratung: Einnahmehinweise, Interaktionen mit anderen Arzneimitteln (z. B. Benzodiazepine, Alkohol), Risiken einer Überdosierung, Hinweise auf Verhalten im Umgang mit Substitutionsmitteln (z. B. nicht an Dritte weitergeben).</p>
+<p>Zusammenarbeit mit Ärzten und Behörden: Tägliche oder wöchentliche Absprachen, Meldung von Problemen (z. B. Dosismissbrauch, Verlust), Teilnahme an Qualitätszirkeln, Kenntnis über zuständige Stellen (Gesundheitsämter, Kassenärztliche Vereinigung).</p>
+<p>Notfallmanagement: Erkennen von Intoxikationen (Atemdepression, Bewusstlosigkeit), Einsatz von Notfallmedikamenten (Naloxon), Alarmierung des Rettungsdienstes, Dokumentation und Nachbesprechung.</p>
+<h3 class='text-lg font-semibold mt-4'>Durchführung und Best Practices</h3>
+<p>Qualifizierte Mitarbeitende: Nur Apotheker:innen oder pharmazeutisches Personal mit entsprechender Qualifikation dürfen Substitutionsmittel herstellen und abgeben<sup class='text-xs align-super text-slate-500'>[27]</sup>. Hilfspersonal darf unter unmittelbarer Aufsicht einfache Tätigkeiten ausführen (z. B. Abfüllung vorbereiten)<sup class='text-xs align-super text-slate-500'>[28]</sup>.</p>
+<p>Klare SOPs: Erstellen Sie verbindliche Arbeitsanweisungen für die Herstellung, Abgabe und Dokumentation. Berücksichtigen Sie regionale Besonderheiten (z. B. eigene BtM‑Formulare).</p>
+<p>Vertrauliche Umgebung: Stellen Sie sicher, dass die Abgabe diskret erfolgt. Wählen Sie einen separaten Raum, um Stigmatisierung und soziale Barrieren abzubauen.</p>
+<p>Fortbildung: Halten Sie sich über Änderungen im Betäubungsmittelrecht und therapeutische Entwicklungen (z. B. neue Substitutionsmittel) auf dem Laufenden. Führen Sie regelmäßige Schulungen durch, um Fehler zu vermeiden.</p>
+<h3 class='text-lg font-semibold mt-4'>Wiederholungsfragen</h3>
+<ol class='list-decimal pl-6 space-y-1'>
+<li>Wer darf laut BAK‑Leitlinie und ApBetrO Substitutionsmittel herstellen und abgeben[27]?</li>
+<li>Welche zwei Arten der Abgabe von Substitutionsmitteln kennen Sie, und was unterscheidet sie?</li>
+<li>Welche Dokumentationspflichten bestehen bei der Substitutionstherapie[28]?</li>
+<li>Welche Maßnahmen gewährleisten Diskretion und Datenschutz im Umgang mit Substitutionspatienten?</li>
+<li>Wie gehen Sie bei einer Überdosierung mit Atemdepression vor?</li>
+<li>Abschluss</li>
+<li>Die vorliegenden Schulungsmaterialien decken alle wesentlichen Pflichtschulungen für öffentliche Apotheken ab. Durch das Verständnis und die Umsetzung dieser Themen tragen Sie maßgeblich zur Sicherheit der Patienten und zur Erfüllung gesetzlicher Vorgaben bei. Bitte nutzen Sie die Wiederholungsfragen zur Selbstüberprüfung und bringen Sie Fragen oder Unklarheiten in Ihren Teamsitzungen zur Sprache. Aktualisierungen der gesetzlichen Grundlagen sollten regelmäßig verfolgt und in die Schulungen integriert werden.</li>
+<li>[1] § 3 ApBetrO - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/apobetro_1987/__3.html</li>
+<li>[2] § 2a ApBetrO - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/apobetro_1987/__2a.html</li>
+<li>[3] § 4a ApBetrO - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/apobetro_1987/__4a.html</li>
+<li>[4] § 14 BioStoffV - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/biostoffv_2013/__14.html</li>
+<li>[5] § 12 ArbSchG - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/arbschg/__12.html</li>
+<li>[6] [8] [9] DGUV Information 205-023 „Brandschutzhelfer - Ausbildung und Befähigung“</li>
+<li>https://publikationen.dguv.de/widgets/pdf/download/article/2848</li>
+<li>[7] § 10 ArbSchG - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/arbschg/__10.html</li>
+<li>[10] [11] DGUV Vorschrift 1 „Grundsätze der Prävention“</li>
+<li>https://publikationen.dguv.de/widgets/pdf/download/article/2909</li>
+<li>[12] [13] [14] § 14 GefStoffV - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/gefstoffv_2010/__14.html</li>
+<li>[15] [16] § 4 MPBetreibV - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/mpbetreibv_2025/__4.html</li>
+<li>[17] LasthandhabV - Verordnung über Sicherheit und Gesundheitsschutz bei der manuellen Handhabung von Lasten bei der Arbeit</li>
+<li>https://www.gesetze-im-internet.de/lasthandhabv/BJNR184200996.html</li>
+<li>[18] JArbSchG - Gesetz zum Schutze der arbeitenden Jugend</li>
+<li>https://www.gesetze-im-internet.de/jarbschg/BJNR009650976.html</li>
+<li>[19] [20] MuSchG - Gesetz zum Schutz von Müttern bei der Arbeit, in der Ausbildung und im Studium</li>
+<li>https://www.gesetze-im-internet.de/muschg_2018/BJNR122810017.html</li>
+<li>[21] Antidiskriminierungsstelle - Pflichten von Arbeitgebern</li>
+<li>https://www.antidiskriminierungsstelle.de/DE/ueber-diskriminierung/lebensbereiche/arbeitsleben/pflichten-von-arbeitgebern/pflichten-von-arbeitgebern-node.html</li>
+<li>[22] Art. 39 DSGVO – Aufgaben des Datenschutzbeauftragten</li>
+<li>https://dsgvo-gesetz.de/art-39-dsgvo/</li>
+<li>[23] [24] Hinweispapier.pdf</li>
+<li>https://www.bundesnetzagentur.de/DE/Fachthemen/Digitales/KI/_functions/Hinweispapier.pdf</li>
+<li>[25] [26] § 20c IfSG - Einzelnorm</li>
+<li>https://www.gesetze-im-internet.de/ifsg/__20c.html</li>
+<li>[27] [28] LL_Herstellung_Abgabe_Substitutionsmittel.pdf</li>
+<li>https://www.abda.de/fileadmin/user_upload/assets/Praktische_Hilfen/Leitlinien/Opiatsubstitution/LL_Herstellung_Abgabe_Substitutionsmittel.pdf</li>
+</ol>
+          `,
+          quiz: [
+            {
+              question: "Substitutionsmittel abgeben darf:",
+              options: ["Pharmazeutisches Personal nach Vorgaben.", "Jede Person.", "Kund:innen.", "Lieferanten."],
+              correctIndex: 0
+            },
+            {
+              question: "Wichtigstes No-Go:",
+              options: ["Fehlende BtM-Dokumentation.", "Diskrete Abgabe.", "Beratung.", "Identitätsprüfung."],
+              correctIndex: 0
+            },
+            {
+              question: "Diskretion ist wichtig wegen:",
+              options: ["Privatsphäre/Datenschutz und Stigma vermeiden.", "Mode.", "Schneller.", "Egal."],
+              correctIndex: 0
+            },
+            {
+              question: "Take-Home bedeutet:",
+              options: ["Abgabe für mehrere Tage nach Vorgaben.", "Nur Sichtbezug.", "Versand.", "Rezept per Foto."],
+              correctIndex: 0
+            }
+          ]
+        }
+      ];
+
+      const courses = allCourses.filter(c => c.enabled);
+
+      function getUserEmail() {
+        try {
+          const u = window.netlifyIdentity ? netlifyIdentity.currentUser() : null;
+          return u?.email || '';
+        } catch { return ''; }
+      }
+
+      function storageKey() {
+        const email = getUserEmail();
+        return email ? `apothekeProgress:${email}` : 'apothekeProgress';
+      }
+
+      function loadProgress() {
+        const raw = localStorage.getItem(storageKey());
+        const obj = raw ? JSON.parse(raw) : {};
+        courses.forEach(c => {
+          if (!obj[c.id]) obj[c.id] = { completed: false, score: 0, lastAt: null };
+        });
+        return obj;
+      }
+
+      function saveProgress(p) {
+        localStorage.setItem(storageKey(), JSON.stringify(p));
+      }
+
+      let progress = loadProgress();
+
+      function updateProgressDisplay() {
+        const total = courses.length;
+        const completed = courses.filter(c => progress[c.id]?.completed).length;
+        progressText.textContent = `${completed}/${total} Module abgeschlossen`;
+        const percentage = total ? (completed / total) * 100 : 0;
+        progressBar.style.width = percentage + '%';
+
+        const email = getUserEmail();
+        userText.textContent = email ? `User: ${email}` : '';
+      }
+
+      function updateCertificateVisibility() {
+        const allCompleted = courses.length > 0 && courses.every(c => progress[c.id]?.completed);
+        if (allCompleted) certificateSection.classList.remove('hidden');
+        else certificateSection.classList.add('hidden');
+      }
+
+      function badgeHtml(course) {
+        const done = progress[course.id]?.completed;
+        const base = done ? 'tag tag-done' : 'tag tag-open';
+        const opt = course.optional ? 'tag tag-optional' : 'tag tag-mandatory';
+        const optText = course.optional ? 'Optional' : 'Pflicht';
+        const doneText = done ? `Abgeschlossen (${progress[course.id].score}%)` : 'Offen';
+        return `
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="${opt}">${optText}</span>
+            <span class="${base}">${doneText}</span>
+          </div>
+        `;
+      }
+
+      function renderCourses() {
+        coursesContainer.innerHTML = '';
+
+        courses.forEach(course => {
+          const done = !!progress[course.id]?.completed;
+
+          const details = document.createElement('details');
+          details.className = 'course';
+          details.open = !done;
+
+          const summary = document.createElement('summary');
+          summary.innerHTML = `
+            <span>${course.title}</span>
+            ${badgeHtml(course)}
+          `;
+          details.appendChild(summary);
+
+          const contentDiv = document.createElement('div');
+          contentDiv.className = 'mt-3 space-y-3';
+          contentDiv.innerHTML = `
+            <p class="text-gray-700">${course.intro}</p>
+            <div class="prose max-w-none">${course.content}</div>
+
+            <div class="quiz mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <div class="flex items-start justify-between gap-4 flex-wrap">
+                <h4 class="font-semibold">Quiz (Multiple Choice)</h4>
+                <div class="text-sm muted">Bestehen ab <b>80%</b></div>
+              </div>
+
+              ${course.quiz.map((q, qi) => `
+                <div class="quiz-question mt-4">
+                  <p class="font-semibold">${qi + 1}. ${q.question}</p>
+                  <div class="mt-2 space-y-1">
+                    ${q.options.map((opt, oi) => `
+                      <label class="block">
+                        <input type="radio" name="${course.id}-q${qi}" value="${oi}" class="mr-2"> ${opt}
+                      </label>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+
+              <div class="mt-4 flex flex-wrap gap-2 items-center">
+                <button class="submit-quiz bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" data-course="${course.id}">
+                  Quiz abschließen
+                </button>
+                <span class="text-sm muted">Wenn du weniger als 80% hast: korrigiere und versuche erneut.</span>
+              </div>
+
+              <p class="quiz-feedback text-sm mt-3"></p>
+            </div>
+          `;
+
+          details.appendChild(contentDiv);
+          coursesContainer.appendChild(details);
+        });
+
+        document.querySelectorAll('.submit-quiz').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const courseId = e.target.dataset.course;
+            const course = courses.find(c => c.id === courseId);
+            const feedbackEl = e.target.closest('.quiz').querySelector('.quiz-feedback');
+
+            let score = 0;
+            course.quiz.forEach((q, qi) => {
+              const selected = document.querySelector(`input[name="${courseId}-q${qi}"]:checked`);
+              if (selected && parseInt(selected.value, 10) === q.correctIndex) score++;
+            });
+
+            const percentage = Math.round((score / course.quiz.length) * 100);
+
+            if (percentage >= 80) {
+              progress[courseId].completed = true;
+              progress[courseId].score = percentage;
+              progress[courseId].lastAt = new Date().toISOString();
+
+              feedbackEl.textContent = `Bestanden: ${percentage}% ✅`;
+              feedbackEl.className = 'quiz-feedback text-green-700';
+
+              saveProgress(progress);
+              renderCourses();
+              updateProgressDisplay();
+              updateCertificateVisibility();
+            } else {
+              feedbackEl.textContent = `Leider nur ${percentage}%. Du benötigst mindestens 80%.`;
+              feedbackEl.className = 'quiz-feedback text-red-700';
+            }
+          });
+        });
+      }
+
+      function updateUI() {
+        const user = window.netlifyIdentity ? netlifyIdentity.currentUser() : null;
+        if (user) {
+          loggedOut.classList.add('hidden');
+          loggedIn.classList.remove('hidden');
+          progressWrapper.classList.remove('hidden');
+
+          progress = loadProgress();
+
+          renderCourses();
+          updateProgressDisplay();
+          updateCertificateVisibility();
+        } else {
+          loggedOut.classList.remove('hidden');
+          loggedIn.classList.add('hidden');
+          progressWrapper.classList.add('hidden');
+          certificateSection.classList.add('hidden');
+        }
+      }
+
+      function hasTokenHash() {
+        const h = window.location.hash || '';
+        return h.includes('invite_token=') || h.includes('confirmation_token=') || h.includes('recovery_token=');
+      }
+
+      if (window.netlifyIdentity) {
+        netlifyIdentity.on('init', () => {
+          updateUI();
+          if (!netlifyIdentity.currentUser() && hasTokenHash()) {
+            setTimeout(() => netlifyIdentity.open(), 250);
+          }
+        });
+
+        netlifyIdentity.on('login', () => {
+          netlifyIdentity.close();
+          try { window.location.hash = ''; } catch {}
+          updateUI();
+        });
+
+        netlifyIdentity.on('logout', () => {
+          updateUI();
+        });
+
+        netlifyIdentity.init();
+      }
+
+      loginBtn?.addEventListener('click', () => netlifyIdentity.open('login'));
+      activateBtn?.addEventListener('click', () => netlifyIdentity.open('signup'));
+      logoutBtn?.addEventListener('click', () => netlifyIdentity.logout());
+
+      resetBtn?.addEventListener('click', () => {
+        if (!confirm('Fortschritt für diesen Benutzer wirklich zurücksetzen?')) return;
+        localStorage.removeItem(storageKey());
+        progress = loadProgress();
+        renderCourses();
+        updateProgressDisplay();
+        updateCertificateVisibility();
+      });
+
+      downloadCertificateBtn?.addEventListener('click', () => {
+        const name = userNameInput.value.trim();
+        if (!name) {
+          alert('Bitte gib deinen Namen ein.');
+          return;
+        }
+        const email = getUserEmail();
+        if (!email) {
+          alert('Kein Benutzer erkannt. Bitte neu einloggen.');
+          return;
+        }
+
+        const allCompleted = courses.length > 0 && courses.every(c => progress[c.id]?.completed);
+        if (!allCompleted) {
+          alert('Noch nicht alle Module abgeschlossen.');
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+        doc.setFontSize(30);
+        doc.text('Zertifikat', 148, 28, { align: 'center' });
+
+        doc.setFontSize(14);
+        doc.text('Pflichtschulung öffentliche Apotheke (intern)', 148, 38, { align: 'center' });
+
+        doc.setFontSize(16);
+        doc.text('Hiermit wird bestätigt, dass', 148, 55, { align: 'center' });
+
+        doc.setFontSize(22);
+        doc.text(name, 148, 68, { align: 'center' });
+
+        doc.setFontSize(12);
+        doc.text(`E-Mail: ${email}`, 148, 78, { align: 'center' });
+
+        doc.setFontSize(12);
+        doc.text(`Abgeschlossene Module: ${courses.length}`, 148, 92, { align: 'center' });
+
+        const leftX = 25;
+        const rightX = 155;
+        let yLeft = 105;
+        let yRight = 105;
+
+        const rows = courses.map((c, idx) => {
+          const score = progress[c.id]?.score ?? 0;
+          return `${idx+1}. ${c.title} — ${score}%`;
+        });
+
+        rows.forEach((line, i) => {
+          if (i < Math.ceil(rows.length/2)) {
+            doc.text(line, leftX, yLeft);
+            yLeft += 7;
+          } else {
+            doc.text(line, rightX, yRight);
+            yRight += 7;
+          }
+        });
+
+        const dateStr = new Date().toLocaleDateString('de-DE');
+        doc.setFontSize(12);
+        doc.text(`Ausgestellt am: ${dateStr}`, 148, 190, { align: 'center' });
+
+        doc.setFontSize(10);
+        doc.text('Hinweis: internes, quizbasiertes Selbststudium (Browser-Speicherung pro User).', 148, 198, { align: 'center' });
+
+        doc.save(`Zertifikat_${name.replace(/\s+/g,'_')}.pdf`);
+      });
+
+      updateUI();
+    });
+  </script>
+</body>
+</html>
