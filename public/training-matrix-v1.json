@@ -1,0 +1,102 @@
+{
+  "version": "v1-simple",
+  "updated_at": "2026-03-08",
+  "roles": ["admin", "pharma", "non_pharma"],
+  "notes": {
+    "model": "single_branch_single_role_assignment",
+    "admin": "system role, no learner dashboard",
+    "azubi": "mapped to pharma"
+  },
+  "trainings": [
+    {
+      "id": "hygiene-basics",
+      "title": "Hygiene & Infektionsschutz",
+      "required_for": ["pharma", "non_pharma"],
+      "optional_for": [],
+      "slides": [
+        "Händehygiene vor und nach jedem relevanten Kontakt.",
+        "Arbeitsflächen regelmäßig reinigen und dokumentieren.",
+        "Schutzmaterial korrekt verwenden und entsorgen."
+      ],
+      "quiz": [
+        {
+          "question": "Wann ist Händedesinfektion verpflichtend?",
+          "options": ["Nur morgens", "Vor und nach relevanten Kontakten", "Nur im Labor"],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "datenschutz-basics",
+      "title": "Datenschutz im Apothekenalltag",
+      "required_for": ["pharma", "non_pharma"],
+      "optional_for": [],
+      "slides": [
+        "Patienten- und Kundendaten nur zweckgebunden nutzen.",
+        "Keine Weitergabe ohne Berechtigung.",
+        "Sichtschutz und sichere Dokumentation beachten."
+      ],
+      "quiz": [
+        {
+          "question": "Was ist im Alltag korrekt?",
+          "options": ["Daten offen liegen lassen", "Datenzugriff nur bei Arbeitsbezug", "Screenshots privat speichern"],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "pharma-core-v1",
+      "title": "Pharma-Kernprozesse V1",
+      "required_for": ["pharma"],
+      "optional_for": ["non_pharma"],
+      "slides": [
+        "Grundlagen zu Abgabe, Prüfung und Dokumentation.",
+        "Arbeiten nach SOP und Rückfrage bei Abweichungen.",
+        "Nachvollziehbarkeit der Prozessschritte sicherstellen."
+      ],
+      "quiz": [
+        {
+          "question": "Was ist für V1 zentral?",
+          "options": ["Arbeiten ohne SOP", "Nachvollziehbare SOP-basierte Abläufe", "Nur mündliche Übergaben"],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "service-kasse-v1",
+      "title": "Service/Kasse/Botendienst-Basis",
+      "required_for": ["non_pharma"],
+      "optional_for": ["pharma"],
+      "slides": [
+        "Kassen- und Übergabeprozesse strukturiert durchführen.",
+        "Datenschutz auch bei Übergaben im Botendienst beachten.",
+        "Abweichungen dokumentieren und intern melden."
+      ],
+      "quiz": [
+        {
+          "question": "Was gehört zur Basis?",
+          "options": ["Übergaben ohne Prüfung", "Saubere Übergabe + Dokumentation", "Keine Meldung bei Fehlern"],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "ki-kompetenz-v1",
+      "title": "KI-Kompetenz (optional)",
+      "required_for": [],
+      "optional_for": ["pharma", "non_pharma"],
+      "slides": [
+        "Nur freigegebene KI-Tools verwenden.",
+        "Keine sensiblen Personendaten in externe Tools eingeben.",
+        "Ergebnisse fachlich prüfen, nicht blind übernehmen."
+      ],
+      "quiz": [
+        {
+          "question": "Welche Aussage ist korrekt?",
+          "options": ["KI-Ausgaben immer ungeprüft übernehmen", "KI-Ausgaben fachlich prüfen", "Patientendaten ungefiltert eingeben"],
+          "correctIndex": 1
+        }
+      ]
+    }
+  ]
+}
