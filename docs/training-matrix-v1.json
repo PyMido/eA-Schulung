@@ -1,0 +1,2777 @@
+{
+  "version": "v1-pro-modules",
+  "updated_at": "2026-03-08",
+  "roles": [
+    "admin",
+    "pharma",
+    "non_pharma"
+  ],
+  "notes": {
+    "model": "single_branch_single_role_assignment",
+    "admin": "system role, no learner dashboard",
+    "azubi": "mapped to pharma"
+  },
+  "trainings": [
+    {
+      "id": "hygiene-basics",
+      "title": "Hygiene & Infektionsschutz",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Hygiene & Infektionsschutz",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Konsequente Hygiene verhindert Übertragungen, schützt vulnerable Personen und reduziert Ausfälle im Team.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Hygienische Händedesinfektion korrekt durchführen.",
+            "Flächen-, Geräte- und Kontaktpunkte risikoorientiert reinigen.",
+            "PSA passend zur Tätigkeit auswählen und korrekt entsorgen."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "IfSG und Hygienerahmenempfehlungen der Länder.",
+            "TRBA/Biostoff-Regelungen für den Umgang mit potenziell infektiösem Material.",
+            "Interne Hygienepläne und SOPs der Apotheke."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Händehygiene in kritischen Momenten",
+          "lead": "Die meisten Übertragungen entstehen über Hände und Touchpoints.",
+          "bullets": [
+            "Desinfektion vor Patientenkontakt, vor aseptischen Tätigkeiten, nach potenzieller Kontamination.",
+            "Mindesteinwirkzeit und vollständige Benetzung beachten.",
+            "Schmuck, lange Nägel und beschädigte Haut vermeiden."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Flächen- und Gerätehygiene",
+          "lead": "Reinigung ist Prozessqualität – nicht Nebenaufgabe.",
+          "bullets": [
+            "Arbeitsflächen mit festgelegter Frequenz desinfizierend reinigen.",
+            "Messbecher, Spatel, Kapselgeräte nach SOP aufbereiten.",
+            "Reinigungsmedien getrennt nach Bereich einsetzen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Persönliche Schutzausrüstung",
+          "lead": "PSA schützt nur bei korrekter Anwendung.",
+          "bullets": [
+            "Handschuhe tätigkeitsbezogen und nicht dauerhaft tragen.",
+            "Maskenwechsel nach Durchfeuchtung oder Herstellerangabe.",
+            "Kontaminierte PSA direkt in vorgesehenen Behälter entsorgen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Umgang mit Verdachtsfällen",
+          "lead": "Klare Abläufe reduzieren Unsicherheit im Team.",
+          "bullets": [
+            "Sichtbar definierte Melde- und Isolationsschritte befolgen.",
+            "Kontaktflächen sofort nach Versorgung desinfizieren.",
+            "Vorkommnisse dokumentieren und intern auswerten."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vorbereitung vor Arbeitsbeginn mit Hygienekontrolle.",
+            "Desinfektionsspender sichtbar und befüllt halten.",
+            "Abweichungen sofort an Teamleitung melden."
+          ],
+          "dont": [
+            "Handschuhe als Ersatz für Händedesinfektion nutzen.",
+            "Unklare Reinigungszuständigkeiten tolerieren.",
+            "PSA aus Zeitdruck mehrfach zweckfremd verwenden."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Reinigungs- und Desinfektionsplan täglich abhaken.",
+            "Auffälligkeiten mit Datum, Ort und Maßnahme dokumentieren.",
+            "Unterweisungsnachweise jährlich aktualisieren."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Hygiene ist ein Kernprozess der Patientensicherheit.",
+            "Standardisierte Routinen reduzieren Fehler und Belastung.",
+            "Dokumentation macht Umsetzung nachweisbar."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Wann ist Händedesinfektion verpflichtend?",
+          "options": [
+            "Nur zu Schichtbeginn",
+            "Vor und nach relevanten Kontakten",
+            "Nur nach Kundenkontakt"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Was gehört zur Flächenhygiene?",
+          "options": [
+            "Nur bei sichtbarer Verschmutzung reinigen",
+            "Risikoorientierter Reinigungsplan mit Frequenzen",
+            "Reinigung vollständig an externen Dienst abgeben"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Welche Aussage zu Handschuhen ist korrekt?",
+          "options": [
+            "Handschuhe ersetzen Händedesinfektion",
+            "Handschuhe sind tätigkeitsbezogen einzusetzen",
+            "Ein Paar Handschuhe darf den ganzen Vormittag getragen werden"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "datenschutz-basics",
+      "title": "Datenschutz im Apothekenalltag",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Datenschutz im Apothekenalltag",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Datenschutz ist Vertrauensschutz: Patienten offenbaren sensible Informationen nur bei sicherem Umgang.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Daten nur zweckgebunden verarbeiten.",
+            "Sicht- und Zugriffsschutz im HV-Bereich sicherstellen.",
+            "Datenschutzvorfälle korrekt melden."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "DSGVO Art. 5, 6 und 32 (Rechtmäßigkeit, Datensicherheit).",
+            "BDSG und landesrechtliche Vorgaben.",
+            "Berufsrechtliche Schweigepflichten."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Datensparsamkeit im Alltag",
+          "lead": "Nur die Informationen erfassen, die für Versorgung und Abrechnung nötig sind.",
+          "bullets": [
+            "Keine privaten Notizen mit Patientendaten auf losem Papier.",
+            "Abfragen am Telefon nur nach Identitätsprüfung.",
+            "Datenfelder in Systemen vollständig, aber schlank nutzen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Sichtschutz und Gesprächsführung",
+          "lead": "Diskretion beginnt räumlich und kommunikativ.",
+          "bullets": [
+            "Monitore so ausrichten, dass Dritte nicht mitlesen.",
+            "Namen und Diagnosen nicht laut quer über den HV-Tisch nennen.",
+            "Bei sensiblen Themen Beratungszone nutzen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Digitale Sicherheit",
+          "lead": "Cyber-Risiken sind auch Datenschutzrisiken.",
+          "bullets": [
+            "Bildschirmsperre beim Verlassen des Arbeitsplatzes aktivieren.",
+            "Keine Patientendaten per ungesichertem Messenger versenden.",
+            "Phishing-Mails sofort intern melden."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Vorfallmanagement",
+          "lead": "Schnelle Meldung begrenzt Schaden und Haftungsrisiken.",
+          "bullets": [
+            "Vorfall intern nach Meldeweg dokumentieren.",
+            "Datenschutzbeauftragte Stelle früh einbinden.",
+            "Sofortmaßnahmen und Lessons Learned festhalten."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Nur notwendige Daten einsehen.",
+            "Vertrauliche Gespräche diskret führen.",
+            "Geräte und Accounts personengebunden nutzen."
+          ],
+          "dont": [
+            "Passwörter teilen oder notieren.",
+            "Patientendaten auf Privatgeräten speichern.",
+            "Datenschutzvorfälle „kleinreden“."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Verarbeitungsverzeichnis und Rollen dokumentieren.",
+            "Datenschutzvorfälle inkl. Reaktionszeit protokollieren.",
+            "Schulungsnachweise für das Team archivieren."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Datenschutz ist Teil professioneller Versorgung.",
+            "Technische und organisatorische Maßnahmen gehören zusammen.",
+            "Melden statt vertuschen schützt Betrieb und Betroffene."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Was beschreibt Datensparsamkeit korrekt?",
+          "options": [
+            "Möglichst viele Daten für spätere Nutzung sammeln",
+            "Nur zwecknotwendige Daten verarbeiten",
+            "Kundendaten ohne Anlass kopieren"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Welche Maßnahme schützt im HV-Bereich?",
+          "options": [
+            "Offene Bildschirme für schnellere Übergaben",
+            "Sichtschutz und diskrete Gesprächsführung",
+            "Patientennamen laut zur Bestätigung aufrufen"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Wie wird mit einem Datenschutzvorfall umgegangen?",
+          "options": [
+            "Nicht dokumentieren, solange kein Schaden sichtbar ist",
+            "Sofort intern melden und dokumentieren",
+            "Erst am Monatsende gesammelt melden"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "pharma-core-v1",
+      "title": "Pharma-Kernprozesse V1",
+      "required_for": [
+        "pharma"
+      ],
+      "optional_for": [
+        "non_pharma"
+      ],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Pharma-Kernprozesse V1",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Pharmazeutische Kernprozesse sichern Wirksamkeit, Sicherheit und Nachvollziehbarkeit jeder Abgabe.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Rezept- und Plausibilitätsprüfung strukturiert durchführen.",
+            "Abgabeprozess nach SOP dokumentieren.",
+            "Bei Unsicherheiten fachlich eskalieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "Apothekenbetriebsordnung (ApBetrO).",
+            "SGB V und Arzneimittelpreis-/Abgaberegeln.",
+            "Interne SOPs für pharmazeutische Prüfung."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prüfschritte vor Abgabe",
+          "lead": "Jede Abgabe beginnt mit einer klaren Risikoabwägung.",
+          "bullets": [
+            "Patient, Verordnung und Arzneimittel eindeutig zuordnen.",
+            "Dosierung, Indikation und Kontraindikationen gegenprüfen.",
+            "Bei Unklarheit Rücksprache dokumentiert einholen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Beratung am HV-Tisch",
+          "lead": "Pharmazeutische Beratung ist Kernleistung.",
+          "bullets": [
+            "Anwendung, Dauer und Warnzeichen verständlich erklären.",
+            "Rückfragen aktiv einholen (Teach-back).",
+            "Adhärenzrisiken offen ansprechen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Abweichungsmanagement",
+          "lead": "Nichtstandardfälle brauchen klare Dokumentation.",
+          "bullets": [
+            "Abweichung, Entscheidung und Freigabe protokollieren.",
+            "Team über relevante Sonderfälle informieren.",
+            "Wiederkehrende Fehler in Teamrunde auswerten."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Qualitätssicherung im Tagesgeschäft",
+          "lead": "Stabile Prozesse entstehen durch Routine und Feedback.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Stichprobenprüfung bei Prozesswechseln durchführen.",
+            "SOP-Versionen aktuell halten."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Prüfschritte vollständig dokumentieren.",
+            "Pharmazeutische Entscheidung begründen.",
+            "Rückfragen frühzeitig stellen."
+          ],
+          "dont": [
+            "Abgabe ohne finale Plausibilitätsprüfung.",
+            "Mündliche Sonderabsprachen ohne Eintrag.",
+            "Fehlerindikatoren ignorieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Prüf- und Freigabeschritte patientenbezogen hinterlegen.",
+            "Abweichungsprotokolle revisionssicher speichern.",
+            "SOP-Schulungsstände je Teammitglied nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung schafft Sicherheit bei hoher Last.",
+            "Pharmazeutische Verantwortung endet nicht mit der Abgabe.",
+            "Dokumentation schützt Patienten und Team."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Was ist Teil der pharmazeutischen Prüfung?",
+          "options": [
+            "Nur Packungsgröße ansehen",
+            "Dosierung und Kontraindikationen prüfen",
+            "Abgabe ohne Rückfragen bei Unklarheiten"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Wann ist eine Eskalation erforderlich?",
+          "options": [
+            "Nur bei IT-Ausfall",
+            "Bei unklarer Verordnung oder Sicherheitsrisiko",
+            "Nie, um den Ablauf nicht zu verzögern"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Abweichungsdokumentation wichtig?",
+          "options": [
+            "Nur für Statistik",
+            "Für Nachvollziehbarkeit und Qualitätsverbesserung",
+            "Sie ist optional"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "service-kasse-v1",
+      "title": "Service/Kasse/Botendienst-Basis",
+      "required_for": [
+        "non_pharma"
+      ],
+      "optional_for": [
+        "pharma"
+      ],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Service/Kasse/Botendienst-Basis",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Serviceprozesse sind der erste Qualitätskontakt – Fehler hier wirken direkt auf Vertrauen und Sicherheit.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Kassenprozesse sicher und kundenorientiert durchführen.",
+            "Übergaben im Botendienst strukturiert absichern.",
+            "Auffälligkeiten sauber dokumentieren und weitergeben."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "Kassensicherungsverordnung und GoBD-Grundsätze.",
+            "Datenschutz- und Schweigepflichtvorgaben im Kundenkontakt.",
+            "Interne Übergabe- und Botendienst-SOPs."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Kassenroutine ohne Medienbruch",
+          "lead": "Klarer Ablauf reduziert Fehlbuchungen.",
+          "bullets": [
+            "Vorgang vollständig erfassen, erst dann kassieren.",
+            "Rabatt- und Zuzahlungsregeln korrekt anwenden.",
+            "Belegausgabe konsequent anbieten."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Sichere Übergaben",
+          "lead": "Jede Übergabe ist ein dokumentierter Verantwortungswechsel.",
+          "bullets": [
+            "Empfängeridentität bei sensiblen Sendungen prüfen.",
+            "Besonderheiten (Kühlware, Fristen) aktiv erläutern.",
+            "Nicht zustellbare Sendungen dokumentiert zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Kommunikation in Belastungsspitzen",
+          "lead": "Freundlichkeit und Struktur verhindern Eskalation.",
+          "bullets": [
+            "Wartezeiten transparent kommunizieren.",
+            "Fehler offen und lösungsorientiert adressieren.",
+            "Bei Konflikten frühzeitig Unterstützung hinzuziehen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Schnittstelle zum pharmazeutischen Team",
+          "lead": "Servicequalität braucht saubere Übergabepunkte.",
+          "bullets": [
+            "Unklare Kundenanfragen eindeutig weiterleiten.",
+            "Rückmeldungen aus Botendienst im Team teilen.",
+            "Prozesslücken an Teamleitung melden."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Kassenabschluss nach Vier-Augen-Prinzip.",
+            "Übergaben mit Checkliste durchführen.",
+            "Kritische Situationen ruhig und strukturiert lösen."
+          ],
+          "dont": [
+            "Buchungen nachträglich „schätzen“.",
+            "Botendienst ohne Zustellnachweis.",
+            "Kundenanliegen ohne Rückmeldung liegen lassen."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Tagesabschluss und Differenzen protokollieren.",
+            "Zustellnachweise mit Zeitstempel sichern.",
+            "Serviceabweichungen im Übergabejournal erfassen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Serviceprozesse sind sicherheitsrelevant.",
+            "Saubere Übergaben schützen Kunden und Apotheke.",
+            "Dokumentation macht Leistung überprüfbar."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Was ist im Kassenprozess korrekt?",
+          "options": [
+            "Teilbuchungen später ergänzen",
+            "Vorgang vollständig erfassen und belegen",
+            "Belege nur auf Nachfrage drucken"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Was gehört zur Botendienst-Übergabe?",
+          "options": [
+            "Nur Paket überreichen",
+            "Identität prüfen und Besonderheiten erklären",
+            "Keine Rückmeldungen dokumentieren"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Wie wird bei Konflikten gehandelt?",
+          "options": [
+            "Diskussion beenden und ignorieren",
+            "Ruhig kommunizieren und Unterstützung holen",
+            "Kundenanliegen verschieben"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "ki-kompetenz-v1",
+      "title": "KI-Kompetenz im Apothekenalltag",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "KI-Kompetenz im Apothekenalltag",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "KI kann entlasten, aber nur bei kontrollierter Nutzung ohne Datenschutz- und Qualitätsrisiken.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Geeignete KI-Anwendungsfälle erkennen.",
+            "Prompting und Ergebnisprüfung sicher anwenden.",
+            "Grenzen und Verbote konsequent einhalten."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "DSGVO/Datenschutz bei Toolnutzung.",
+            "Interne IT-Sicherheitsrichtlinien.",
+            "Berufsrechtliche Verantwortung bleibt beim Menschen."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Geeignete Einsatzfelder",
+          "lead": "KI ist Assistenz, nicht Entscheidungsersatz.",
+          "bullets": [
+            "Textentwürfe für interne Kommunikation.",
+            "Strukturierung von Schulungs- oder SOP-Inhalten.",
+            "Keine autonome patientenindividuelle Therapieentscheidung."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Sicheres Prompting",
+          "lead": "Qualität steigt mit klaren Aufgabenstellungen.",
+          "bullets": [
+            "Ziel, Kontext, Format explizit definieren.",
+            "Keine personenbezogenen Daten eingeben.",
+            "Ergebnis immer gegen Primärquellen prüfen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Qualitätssicherung",
+          "lead": "KI-Ausgaben können plausibel klingen und trotzdem falsch sein.",
+          "bullets": [
+            "Faktencheck vor Nutzung im Teamalltag.",
+            "Kritische Aussagen durch Fachpersonal verifizieren.",
+            "Unsichere Outputs nicht weiterverwenden."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Governance und Grenzen",
+          "lead": "Verantwortung bleibt organisatorisch klar zugewiesen.",
+          "bullets": [
+            "Nur freigegebene Tools nutzen.",
+            "Nutzungsvorfälle bei Fehlern melden.",
+            "Regelwerk regelmäßig nachschärfen."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "KI für Entwurf, Struktur und Vorbereitung nutzen.",
+            "Ergebnisse fachlich verifizieren.",
+            "Nutzungsgrenzen transparent kommunizieren."
+          ],
+          "dont": [
+            "Patientendaten in offene KI-Systeme eingeben.",
+            "Ungeprüfte KI-Antworten übernehmen.",
+            "Nicht freigegebene Tools im Alltag einsetzen."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Freigegebene Use-Cases und Toolliste versionieren.",
+            "Fehlerfälle und Korrekturen nachvollziehbar protokollieren.",
+            "Regelmäßige Team-Unterweisung dokumentieren."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "KI steigert Effizienz nur mit klaren Leitplanken.",
+            "Datenschutz und Fachprüfung sind nicht delegierbar.",
+            "Gute Governance macht KI nutzbar und sicher."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welche Nutzung ist zulässig?",
+          "options": [
+            "Patientenverlauf in öffentliches KI-Tool kopieren",
+            "Interne Textstruktur ohne Personendaten erstellen",
+            "KI-Ausgabe ungeprüft als Beratung verwenden"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Was bleibt immer Pflicht?",
+          "options": [
+            "Fachliche Endprüfung durch Mitarbeitende",
+            "Vollständige Automatisierung von Entscheidungen",
+            "Keine Dokumentation"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Welche Aussage ist korrekt?",
+          "options": [
+            "Nur freigegebene Tools nutzen",
+            "Jedes kostenlose KI-Tool ist erlaubt",
+            "KI ersetzt Datenschutzvorgaben"
+          ],
+          "correctIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "arbeitssicherheit",
+      "title": "Arbeitssicherheit & Ergonomie",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Arbeitssicherheit & Ergonomie",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "brandschutz",
+      "title": "Brandschutz und Evakuierung",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Brandschutz und Evakuierung",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "notfallmanagement",
+      "title": "Notfallmanagement in der Offizin",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Notfallmanagement in der Offizin",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "rezeptpruefung-gkv",
+      "title": "Rezeptprüfung GKV/PKV",
+      "required_for": [
+        "pharma"
+      ],
+      "optional_for": [
+        "non_pharma"
+      ],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Rezeptprüfung GKV/PKV",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "btm-sicherheit",
+      "title": "BtM-Handling und Sicherheit",
+      "required_for": [
+        "pharma"
+      ],
+      "optional_for": [
+        "non_pharma"
+      ],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "BtM-Handling und Sicherheit",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "kuehlkette",
+      "title": "Kühlkette & Temperaturempfindliche Arzneimittel",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Kühlkette & Temperaturempfindliche Arzneimittel",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "otc-beratung",
+      "title": "OTC-Beratung strukturiert führen",
+      "required_for": [
+        "pharma"
+      ],
+      "optional_for": [
+        "non_pharma"
+      ],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "OTC-Beratung strukturiert führen",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "interaktionscheck",
+      "title": "Interaktionscheck und Medikationssicherheit",
+      "required_for": [
+        "pharma"
+      ],
+      "optional_for": [
+        "non_pharma"
+      ],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Interaktionscheck und Medikationssicherheit",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "retax-prophylaxe",
+      "title": "Retax-Prophylaxe und Abgabesicherheit",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Retax-Prophylaxe und Abgabesicherheit",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "botendienst-vertiefung",
+      "title": "Botendienst: Risikoarme Zustellung",
+      "required_for": [
+        "non_pharma"
+      ],
+      "optional_for": [
+        "pharma"
+      ],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Botendienst: Risikoarme Zustellung",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "lager-verfall",
+      "title": "Lagerführung, Verfall und Chargen",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Lagerführung, Verfall und Chargen",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "qm-sop",
+      "title": "Qualitätsmanagement und SOP-Disziplin",
+      "required_for": [
+        "pharma",
+        "non_pharma"
+      ],
+      "optional_for": [],
+      "slides": [
+        {
+          "tag": "Titelfolie",
+          "title": "Qualitätsmanagement und SOP-Disziplin",
+          "lead": "Praxisorientiertes Modul im PowerPoint-Stil für den Apothekenalltag.",
+          "info": [
+            {
+              "label": "Zielgruppe",
+              "value": "pharma, non_pharma"
+            },
+            {
+              "label": "Dauer",
+              "value": "ca. 20–30 Minuten"
+            }
+          ]
+        },
+        {
+          "tag": "Warum wichtig",
+          "title": "Warum dieses Thema relevant ist",
+          "lead": "Klare Standards im Tagesgeschäft vermeiden kritische Fehler und sichern eine verlässliche Versorgung.",
+          "bullets": [
+            "Patientensicherheit und Versorgungsqualität stärken.",
+            "Rechtssicherheit für Team und Betrieb schaffen.",
+            "Fehlerkosten und Rückfragen im Alltag reduzieren."
+          ]
+        },
+        {
+          "tag": "Lernziele",
+          "title": "Was Sie nach dem Modul sicher können",
+          "bullets": [
+            "Standardabläufe sicher anwenden.",
+            "Risikostellen früh erkennen.",
+            "Abweichungen konsequent rückmelden und dokumentieren."
+          ]
+        },
+        {
+          "tag": "Rechtsgrundlagen",
+          "title": "Gesetzliche und normative Grundlagen",
+          "bullets": [
+            "ApBetrO und einschlägige Arbeitsschutz-/Qualitätsvorgaben.",
+            "Interne SOPs und Unterweisungsrichtlinien.",
+            "Dokumentationspflichten für Nachweis und Audit."
+          ]
+        },
+        {
+          "tag": "Inhalt 1",
+          "title": "Prozessschritt 1: Vorbereitung",
+          "lead": "Gute Vorbereitung senkt Fehlerrisiken deutlich.",
+          "bullets": [
+            "Arbeitsmittel und Informationen vollständig prüfen.",
+            "Verantwortlichkeiten vor Beginn klären.",
+            "Schnittstellen zum Team abstimmen."
+          ]
+        },
+        {
+          "tag": "Inhalt 2",
+          "title": "Prozessschritt 2: Durchführung",
+          "lead": "Saubere Ausführung heißt: ruhig, strukturiert, nachvollziehbar.",
+          "bullets": [
+            "Checklisten konsequent nutzen.",
+            "Bei Abweichung sofort stoppen und klären.",
+            "Kritische Entscheidungen dokumentiert treffen."
+          ]
+        },
+        {
+          "tag": "Inhalt 3",
+          "title": "Prozessschritt 3: Qualitätskontrolle",
+          "lead": "Kontrolle ist Teil des Prozesses, nicht optional.",
+          "bullets": [
+            "Ergebnis gegen Soll-Kriterien prüfen.",
+            "Fehlerschleifen im Team rückmelden.",
+            "Lerneffekte in SOPs zurückführen."
+          ]
+        },
+        {
+          "tag": "Inhalt 4",
+          "title": "Kommunikation und Übergabe",
+          "lead": "Übergaben entscheiden über Prozessstabilität.",
+          "bullets": [
+            "Relevante Informationen vollständig übergeben.",
+            "Rückfragen aktiv einfordern.",
+            "Verantwortungswechsel dokumentieren."
+          ]
+        },
+        {
+          "tag": "Do / Don't",
+          "title": "Typische Fehler vermeiden",
+          "lead": "Die folgende Gegenüberstellung hilft bei der schnellen Anwendung im Alltag.",
+          "do": [
+            "Vor Tätigkeitsstart kurz Risiko-Check durchführen.",
+            "Bei Unsicherheit frühzeitig eskalieren.",
+            "Dokumentation zeitnah und vollständig führen."
+          ],
+          "dont": [
+            "Abkürzungen außerhalb definierter SOP nutzen.",
+            "Probleme aus Zeitdruck nicht melden.",
+            "Nachweise erst nachträglich rekonstruieren."
+          ]
+        },
+        {
+          "tag": "Dokumentation",
+          "title": "Dokumentation und Nachweispflichten",
+          "bullets": [
+            "Durchführungszeit, Verantwortliche und Ergebnis festhalten.",
+            "Abweichungen inkl. Maßnahme protokollieren.",
+            "Unterweisungs- und Schulungsstand nachweisen."
+          ]
+        },
+        {
+          "tag": "Zusammenfassung",
+          "title": "Kernaussagen auf einen Blick",
+          "bullets": [
+            "Standardisierung erhöht Qualität und Geschwindigkeit.",
+            "Fehlerprävention beginnt vor der Durchführung.",
+            "Gute Dokumentation schafft Audit-Sicherheit."
+          ],
+          "info": [
+            {
+              "label": "Merksatz",
+              "value": "Sicher arbeiten heißt: standardisiert handeln, dokumentieren, rückmelden."
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "Welcher Schritt reduziert Fehler am stärksten?",
+          "options": [
+            "Vorbereitung mit Checkliste",
+            "Spontanes Vorgehen",
+            "Nur auf Erfahrung vertrauen"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Wie wird bei Abweichung gehandelt?",
+          "options": [
+            "Weiterarbeiten und später melden",
+            "Stoppen, klären, dokumentieren",
+            "Ignorieren, wenn Zeitdruck besteht"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Warum ist Nachweisführung wichtig?",
+          "options": [
+            "Nur für interne Statistik",
+            "Für Nachvollziehbarkeit und Auditfähigkeit",
+            "Sie kann entfallen, wenn das Ergebnis gut ist"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    }
+  ]
+}

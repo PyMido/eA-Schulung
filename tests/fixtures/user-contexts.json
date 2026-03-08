@@ -1,0 +1,6 @@
+[
+  { "id": "admin", "userContext": { "email": "admin@apotheke.local", "role": "admin" } },
+  { "id": "pharma", "userContext": { "email": "pharma@apotheke.local", "role": "pharma" } },
+  { "id": "non_pharma", "userContext": { "email": "non@apotheke.local", "role": "non_pharma" } },
+  { "id": "invalid", "userContext": { "email": "x@x", "role": "other" } }
+]

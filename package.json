@@ -1,0 +1,10 @@
+{
+  "name": "ea-schulung",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Resolver logic for training assignments",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:watch": "node --test --watch tests/*.test.js"
+  }
+}
